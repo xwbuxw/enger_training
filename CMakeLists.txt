@@ -107,9 +107,6 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
-add_executable(decision_making_node decision.cpp)
-target_link_libraries(decision_making_node ${catkin_LIBRARIES} )
-
 ###########
 ## Build ##
 ###########
@@ -125,6 +122,8 @@ add_library(${PROJECT_NAME}
 ./include/state_machine_.cpp
 )
 
+add_executable(decision_making_node decision.cpp)
+target_link_libraries(decision_making_node ${catkin_LIBRARIES} )
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}

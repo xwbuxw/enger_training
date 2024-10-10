@@ -31,6 +31,7 @@ void RobotFSM::processEvent(Event event) {
         case State::COMPLETE:
             handleComplete(event);
             break;
+            
     }
 }
 

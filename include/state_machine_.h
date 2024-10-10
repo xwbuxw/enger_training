@@ -53,4 +53,6 @@ private:
     void handleComplete(Event event);
 };
 
+static RobotFSM fsm;
+
 #endif
