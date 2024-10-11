@@ -100,11 +100,12 @@ find_package(catkin REQUIRED COMPONENTS
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
+
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES dicision_making
-#  CATKIN_DEPENDS roscpp std_msgs
-#  DEPENDS system_lib
+  # INCLUDE_DIRS include
+  # LIBRARIES
+  # CATKIN_DEPENDS roscpp
+  # # 其他依赖
 )
 
 ###########
@@ -114,15 +115,16 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-  include
   ${catkin_INCLUDE_DIRS}
+  include
 )
 
 add_library(${PROJECT_NAME}
-./include/state_machine_.cpp
+src/state_machine_.cpp
 )
 
-add_executable(decision_making_node decision.cpp)
+add_executable(decision_making_node src/decision.cpp src/state_machine_.cpp)
+
 target_link_libraries(decision_making_node ${catkin_LIBRARIES} )
 
 ## Declare a C++ library

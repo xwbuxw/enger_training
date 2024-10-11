@@ -1,8 +1,6 @@
 #ifndef STATE_MACHINE__H
 #define STATE_MACHINE__H
 
-#include <iostream>
-
 
 enum class State {
     INIT,
