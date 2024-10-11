@@ -30,6 +30,10 @@ public:
     void processEvent(Event event);
     
 private:
+    int fechting_order;
+
+    ros::NodeHandle nh_;
+
     State currentState;
 
     void handleInit(Event event);
@@ -50,7 +54,5 @@ private:
 
     void handleComplete(Event event);
 };
-
-static RobotFSM fsm;
 
 #endif

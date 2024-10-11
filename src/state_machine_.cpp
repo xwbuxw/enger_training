@@ -1,6 +1,6 @@
 #include <iostream>
 #include <state_machine_.h>
-
+#include <ros/ros.h>
 
 void RobotFSM::processEvent(Event event) {
     switch (currentState) {
@@ -35,64 +35,69 @@ void RobotFSM::processEvent(Event event) {
     }
 }
 
-void RobotFSM::handleInit(Event event){
+void RobotFSM::handleInit(Event event){//在这里加入一键启动代码，现在模拟一键启动
+    fechting_order = 0;
     if (event == Event::QR_CODE_READ) {
-        //currentState = State::READ_QR_CODE;
-        std::cout << "Reading QR code." << std::endl;
+        currentState = State::READ_QR_CODE;
+        ROS_INFO("Read QR code.");
     }
 }
 
 void RobotFSM::handleReadQRCode(Event event) {
-    if (event == Event::QR_CODE_READ) {
-        //currentState = State::FETCH_FIRST_BATCH;
-        std::cout << "Fetching first batch of materials." << std::endl;
+    //fechting_order = get_QRCODE_order();
+    nh_.setParam("fechting_order",fechting_order);
+    //加入判断，如果参数服务器中的fechting_order为0，则重新执行扫码程序，超过五秒还没有扫描到，则发出警报，随后退出
+    //如果参数服务器中的fechting_order不为0，则继续执行以下程序
+    if (event == Event::QR_CODE_READ) {//在当前状态
+        currentState = State::FETCH_FIRST_BATCH;
+        ROS_INFO("Fetching first batch of materials.");
     }
 }
 
 void RobotFSM::handleFetchFirstBatch(Event event) {
     if (event == Event::BATCH_FETCHED) {
-        //currentState = State::DELIVER_TO_PROCESSING;
-        std::cout << "Delivering first batch to processing area." << std::endl;
+        currentState = State::DELIVER_TO_PROCESSING;
+        ROS_INFO("Delivering first batch to processing area.");
     }
 }
 
 void RobotFSM::handleDeliverToProcessing(Event event) {
     if (event == Event::BATCH_DELIVERED) {
-        //currentState = State::STORE_FIRST_BATCH;
-        std::cout << "Storing first batch in temporary storage." << std::endl;
+        currentState = State::STORE_FIRST_BATCH;
+        ROS_INFO("Storing first batch in temporary storage.");
     }
 }
 
 void RobotFSM::handleStoreFirstBatch(Event event) {
     if (event == Event::BATCH_STORED) {
-        //currentState = State::FETCH_SECOND_BATCH;
-        std::cout << "Fetching second batch of materials." << std::endl;
+        currentState = State::FETCH_SECOND_BATCH;
+        ROS_INFO("Fetching second batch of materials.");
     }
 }
 
 void RobotFSM::handleFetchSecondBatch(Event event) {
     if (event == Event::BATCH_FETCHED) {
-        //currentState = State::DELIVER_TO_PROCESSING;
-        std::cout << "Delivering second batch to processing area." << std::endl;
+        currentState = State::DELIVER_TO_PROCESSING;
+        ROS_INFO("Delivering second batch to processing area.");
     }
 }
 
 void RobotFSM::handleStoreSecondBatch(Event event) {
     if (event == Event::BATCH_STORED) {
-        //currentState = State::RETURN_TO_START;
-        std::cout << "Returning to start." << std::endl;
+        currentState = State::RETURN_TO_START;
+        ROS_INFO("Returning to start.");
     }
 }
 
 void RobotFSM::handleReturnToStart(Event event) {
     if (event == Event::RETURNED_TO_START) {
-        //currentState = State::COMPLETE;
-        std::cout << "Task complete." << std::endl;
+        currentState = State::COMPLETE;
+        ROS_INFO("Task complete.");
     }
 }
 
 void RobotFSM::handleComplete(Event event) {
     // Task is complete, no further action needed
-    std::cout << "Task completed." << std::endl;
+    ROS_INFO("Task completed.");
 }
 
