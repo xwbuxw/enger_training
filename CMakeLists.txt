@@ -119,11 +119,12 @@ include_directories(
   include
 )
 
-add_library(${PROJECT_NAME}
-src/state_machine_.cpp
-)
+# add_library(${PROJECT_NAME}
+# src/state_machine_.cpp
+# )
 
 add_executable(decision_making_node src/decision.cpp src/state_machine_.cpp)
+
 
 target_link_libraries(decision_making_node ${catkin_LIBRARIES} )
 

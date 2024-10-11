@@ -37,35 +37,35 @@ void RobotFSM::processEvent(Event event) {
 
 void RobotFSM::handleInit(Event event){
     if (event == Event::QR_CODE_READ) {
-        //currentState = State::READ_QR_CODE;
+        currentState = State::READ_QR_CODE;
         std::cout << "Reading QR code." << std::endl;
     }
 }
 
 void RobotFSM::handleReadQRCode(Event event) {
     if (event == Event::QR_CODE_READ) {
-        //currentState = State::FETCH_FIRST_BATCH;
+        currentState = State::FETCH_FIRST_BATCH;
         std::cout << "Fetching first batch of materials." << std::endl;
     }
 }
 
 void RobotFSM::handleFetchFirstBatch(Event event) {
     if (event == Event::BATCH_FETCHED) {
-        //currentState = State::DELIVER_TO_PROCESSING;
+        currentState = State::DELIVER_TO_PROCESSING;
         std::cout << "Delivering first batch to processing area." << std::endl;
     }
 }
 
 void RobotFSM::handleDeliverToProcessing(Event event) {
     if (event == Event::BATCH_DELIVERED) {
-        //currentState = State::STORE_FIRST_BATCH;
+        currentState = State::STORE_FIRST_BATCH;
         std::cout << "Storing first batch in temporary storage." << std::endl;
     }
 }
 
 void RobotFSM::handleStoreFirstBatch(Event event) {
     if (event == Event::BATCH_STORED) {
-        //currentState = State::FETCH_SECOND_BATCH;
+        currentState = State::FETCH_SECOND_BATCH;
         std::cout << "Fetching second batch of materials." << std::endl;
     }
 }
