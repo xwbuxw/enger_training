@@ -1,6 +1,7 @@
 #ifndef STATE_MACHINE__H
 #define STATE_MACHINE__H
 
+#include <ros/ros.h>
 
 enum class State {
     INIT,
@@ -11,7 +12,8 @@ enum class State {
     FETCH_SECOND_BATCH,
     STORE_SECOND_BATCH,
     RETURN_TO_START,
-    COMPLETE
+    COMPLETE,
+    TEST
 };
 
 enum class Event {
@@ -20,7 +22,8 @@ enum class Event {
     BATCH_DELIVERED,
     BATCH_STORED,
     RETURNED_TO_START,
-    TASK_COMPLETE
+    TASK_COMPLETE,
+    TEST
 };
 
 class RobotFSM {
