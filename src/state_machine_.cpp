@@ -1,6 +1,11 @@
+#include "ros/console.h"
+#include "ros/publisher.h"
+#include <cmath>
 #include <iostream>
 #include <state_machine_.h>
 #include <ros/ros.h>
+
+
 
 void RobotFSM::processEvent(Event event) {
     switch (currentState) {
@@ -41,7 +46,15 @@ void RobotFSM::handleInit(Event event){//在这里加入一键启动代码，现
         currentState = State::TEST;
         ROS_INFO("TEST_START!");
     }
-    
+    if(target_pose.pose.pose.position.x==0){
+        target_pose = cur_pose;
+        target_pose.pose.pose.position.x+=0.2; 
+    }
+    double x_error = target_pose.pose.pose.position.x - cur_pose.pose.pose.position.x;
+    if(fabs(x_error)<0.05){
+        ROS_INFO("arrived!");
+        currentState = State::COMPLETE;
+    }
     // if (event == Event::QR_CODE_READ) {
     //     currentState = State::READ_QR_CODE;
     //     ROS_INFO("Read QR code.");
@@ -103,6 +116,7 @@ void RobotFSM::handleReturnToStart(Event event) {
 
 void RobotFSM::handleComplete(Event event) {
     // Task is complete, no further action needed
+    target_pose = cur_pose;
     ROS_INFO("Task completed.");
 }
 

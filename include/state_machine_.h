@@ -2,6 +2,10 @@
 #define STATE_MACHINE__H
 
 #include <ros/ros.h>
+#include <nav_msgs/Odometry.h>
+
+static nav_msgs::Odometry cur_pose;
+static nav_msgs::Odometry target_pose;
 
 enum class State {
     INIT,
