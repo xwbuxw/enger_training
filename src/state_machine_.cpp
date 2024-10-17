@@ -41,6 +41,7 @@ void RobotFSM::handleInit(Event event){//在这里加入一键启动代码，现
         currentState = State::TEST;
         ROS_INFO("TEST_START!");
     }
+    
     // if (event == Event::QR_CODE_READ) {
     //     currentState = State::READ_QR_CODE;
     //     ROS_INFO("Read QR code.");
