@@ -4,13 +4,18 @@
 #include <iostream>
 #include <state_machine_.h>
 #include <ros/ros.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf/transform_datatypes.h>
 
-
+nav_msgs::Odometry cur_pose;
+nav_msgs::Odometry target_pose;
 
 void RobotFSM::processEvent(Event event) {
+    nav_msgs::Odometry return_value;
     switch (currentState) {
-        case State::INIT:
+        case State::TEST:
             handleInit(event);
+            //ROS_INFO("process_init");
             break;
         case State::READ_QR_CODE:
             handleReadQRCode(event);
@@ -40,25 +45,43 @@ void RobotFSM::processEvent(Event event) {
     }
 }
 
+// void RobotFSM::processEvent(Event event) {
+//     handleInit(event);
+//     ROS_INFO("process_init");
+// }
+
 void RobotFSM::handleInit(Event event){//在这里加入一键启动代码，现在模拟一键启动
     fechting_order = 0;
-    if (event == Event::TEST) {
+    if (event != Event::TEST) {
         currentState = State::TEST;
         ROS_INFO("TEST_START!");
     }
-    if(target_pose.pose.pose.position.x==0){
+    if(target_pose.pose.pose.position.x==0
+    ){
+        if(cur_pose.pose.pose.position.x != 0){
         target_pose = cur_pose;
-        target_pose.pose.pose.position.x+=0.2; 
+        
+        double tar_yaw = tf::getYaw(cur_pose.pose.pose.orientation)+M_PI_2;
+        if (tar_yaw < -M_PI) {
+        tar_yaw += 2 * M_PI;
+        }
+        tf2::Quaternion target_q;
+        target_q.setRPY(0,0,tar_yaw);
+        geometry_msgs::Quaternion target_orientation = tf2::toMsg(target_q);
+        
+        target_pose.pose.pose.orientation = target_orientation;
+        //target_pose.pose.pose.position.x-=0.5;
+        }
     }
+    //ROS_INFO("x=%.2f,y=%.2f,z=%.2f",cur_pose.pose.pose.position.x,cur_pose.pose.pose.position.y,cur_pose.pose.pose.position.z);
     double x_error = target_pose.pose.pose.position.x - cur_pose.pose.pose.position.x;
     if(fabs(x_error)<0.05){
         ROS_INFO("arrived!");
-        currentState = State::COMPLETE;
+        //currentState = State::COMPLETE;
     }
-    // if (event == Event::QR_CODE_READ) {
-    //     currentState = State::READ_QR_CODE;
-    //     ROS_INFO("Read QR code.");
-    // }
+    // ROS_INFO("x=%.2f,y=%.2f,z=%.2f",
+    // target_pose.pose.pose.position.x,target_pose.pose.pose.position.y,target_pose.pose.pose.position.z);
+    //target_pose.pose.pose.orientation = cur_pose.pose.pose.orientation;
 }
 
 void RobotFSM::handleReadQRCode(Event event) {
@@ -116,7 +139,7 @@ void RobotFSM::handleReturnToStart(Event event) {
 
 void RobotFSM::handleComplete(Event event) {
     // Task is complete, no further action needed
-    target_pose = cur_pose;
+    // target_pose = cur_pose;
     ROS_INFO("Task completed.");
 }
 

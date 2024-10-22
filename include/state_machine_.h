@@ -4,8 +4,8 @@
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
 
-static nav_msgs::Odometry cur_pose;
-static nav_msgs::Odometry target_pose;
+extern nav_msgs::Odometry cur_pose;
+extern nav_msgs::Odometry target_pose;
 
 enum class State {
     INIT,
@@ -35,6 +35,10 @@ public:
     RobotFSM() : currentState(State::INIT) {}
 
     void processEvent(Event event);
+
+    void set_state(State state) {
+        currentState = state;
+    }
     
 private:
     int fechting_order;
