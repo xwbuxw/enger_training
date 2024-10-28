@@ -7,8 +7,37 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf/transform_datatypes.h>
 
+#include <tf2/LinearMath/Transform.h>
+#include <tf2/LinearMath/Quaternion.h>
+
+
 nav_msgs::Odometry cur_pose;
 nav_msgs::Odometry target_pose;
+
+nav_msgs::Odometry transformToCurPoseFrame(const nav_msgs::Odometry& target_pose, 
+                                           const nav_msgs::Odometry& cur_pose) {
+    // 提取 cur_pose 中的旋转信息并生成 tf2 Transform
+    tf2::Transform cur_transform;
+    tf2::Quaternion cur_orientation;
+    tf2::fromMsg(cur_pose.pose.pose.orientation, cur_orientation);
+    cur_transform.setRotation(cur_orientation);
+    cur_transform.setOrigin(tf2::Vector3(cur_pose.pose.pose.position.x, cur_pose.pose.pose.position.y, cur_pose.pose.pose.position.z));
+
+    // 提取 target_pose 的位置并生成 tf2 Vector3
+    tf2::Vector3 target_position(target_pose.pose.pose.position.x, target_pose.pose.pose.position.y, target_pose.pose.pose.position.z);
+
+    // 计算相对于 cur_pose 的坐标
+    tf2::Vector3 transformed_position = cur_transform.inverse() * target_position;
+
+    // 构建返回的 nav_msgs::Odometry 对象，只设置位置部分
+    nav_msgs::Odometry transformed_odom;
+    transformed_odom.pose.pose.position.x = transformed_position.x();
+    transformed_odom.pose.pose.position.y = transformed_position.y();
+    transformed_odom.pose.pose.position.z = transformed_position.z();
+
+    return transformed_odom;
+}
+
 
 void RobotFSM::processEvent(Event event) {
     nav_msgs::Odometry return_value;
