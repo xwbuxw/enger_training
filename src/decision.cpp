@@ -9,6 +9,8 @@ void cur_pose_cb(const nav_msgs::Odometry::ConstPtr& msg)
 {
     cur_pose = *msg;
     //ROS_INFO("x=%.2f,y=%.2f,z=%.2f",cur_pose.pose.pose.position.x,cur_pose.pose.pose.position.y,cur_pose.pose.pose.position.z);
+    int a=1;
+
 }
 
 int main(int argc, char **argv) {
