@@ -5,7 +5,8 @@
 #include <nav_msgs/Odometry.h>
 
 extern nav_msgs::Odometry cur_pose;
-extern nav_msgs::Odometry target_pose;
+extern nav_msgs::Odometry pub_target_pose;
+extern nav_msgs::Odometry set_target_pose;
 
 enum class State {
     INIT,

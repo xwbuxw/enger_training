@@ -19,11 +19,11 @@ int main(int argc, char **argv) {
     ros::Subscriber curr_pose_sub = nh.subscribe<nav_msgs::Odometry>
         ("/aft_mapped_to_init", 10, cur_pose_cb);
     ros::Publisher tar_pose_pub = nh.advertise<nav_msgs::Odometry>("/target_pose", 10);
-    target_pose.pose.pose.position.x=0;
+    set_target_pose.pose.pose.position.x=0;
     fsm.set_state(State::TEST);
     while(ros::ok()){
         fsm.processEvent(Event::TEST);
-        tar_pose_pub.publish(target_pose);
+        tar_pose_pub.publish(pub_target_pose);
         //fsm.processEvent(Event::QR_CODE_READ);
         // fsm.processEvent(Event::BATCH_FETCHED);
         // fsm.processEvent(Event::BATCH_DELIVERED);
