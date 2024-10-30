@@ -41,7 +41,7 @@ public:
         currentState = state;
     }
     
-private:
+private:  
     int fechting_order;
 
     ros::NodeHandle nh_;
