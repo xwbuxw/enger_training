@@ -14,8 +14,7 @@
 nav_msgs::Odometry cur_pose;
 nav_msgs::Odometry target_pose;
 
-nav_msgs::Odometry transformToCurPoseFrame(const nav_msgs::Odometry& target_pose, 
-                                           const nav_msgs::Odometry& cur_pose) {
+nav_msgs::Odometry transformToCurPoseFrame(const nav_msgs::Odometry& target_pose, const nav_msgs::Odometry& cur_pose) {
     // 提取 cur_pose 中的旋转信息并生成 tf2 Transform
     tf2::Transform cur_transform;
     tf2::Quaternion cur_orientation;
