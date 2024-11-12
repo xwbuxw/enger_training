@@ -123,7 +123,7 @@ include_directories(
 # src/state_machine_.cpp
 # )
 
-add_executable(decision_making_node src/decision.cpp src/state_machine_.cpp)
+add_executable(decision_making_node src/decision.cpp src/state_machine_.cpp src/tools.cpp)
 
 
 target_link_libraries(decision_making_node ${catkin_LIBRARIES} )

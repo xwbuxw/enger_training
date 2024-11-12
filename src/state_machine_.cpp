@@ -6,9 +6,15 @@
 #include <ros/ros.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf/transform_datatypes.h>
+#include <tf2/LinearMath/Transform.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include "tools.h"
+
 
 nav_msgs::Odometry cur_pose;
-nav_msgs::Odometry target_pose;
+nav_msgs::Odometry pub_target_pose;
+nav_msgs::Odometry set_target_pose;
+
 
 
 
@@ -58,25 +64,18 @@ void RobotFSM::handleInit(Event event){//在这里加入一键启动代码，现
         currentState = State::TEST;
         ROS_INFO("TEST_START!");
     }
-    if(target_pose.pose.pose.position.x==0
+    if(set_target_pose.pose.pose.position.x==0
     ){
         if(cur_pose.pose.pose.position.x != 0){
-        target_pose = cur_pose;
         
-        double tar_yaw = tf::getYaw(cur_pose.pose.pose.orientation)+M_PI_2;
-        if (tar_yaw < -M_PI) {
-        tar_yaw += 2 * M_PI;
-        }
-        tf2::Quaternion target_q;
-        target_q.setRPY(0,0,tar_yaw);
-        geometry_msgs::Quaternion target_orientation = tf2::toMsg(target_q);
-        
-        target_pose.pose.pose.orientation = target_orientation;
+        set_target_pose.pose.pose.position.x = 2;
+        set_target_pose.pose.pose.position.y = 0;
+        pub_target_pose = trans_global2car( set_target_pose,cur_pose);
         //target_pose.pose.pose.position.x-=0.5;
-        }
     }
     //ROS_INFO("x=%.2f,y=%.2f,z=%.2f",cur_pose.pose.pose.position.x,cur_pose.pose.pose.position.y,cur_pose.pose.pose.position.z);
-    double x_error = target_pose.pose.pose.position.x - cur_pose.pose.pose.position.x;
+    double x_error = set_target_pose.pose.pose.position.x - cur_pose.pose.pose.position.x;
+    pub_target_pose = trans_global2car(set_target_pose,cur_pose);
     if(fabs(x_error)<0.05){
         ROS_INFO("arrived!");
         //currentState = State::COMPLETE;
@@ -84,6 +83,7 @@ void RobotFSM::handleInit(Event event){//在这里加入一键启动代码，现
     // ROS_INFO("x=%.2f,y=%.2f,z=%.2f",
     // target_pose.pose.pose.position.x,target_pose.pose.pose.position.y,target_pose.pose.pose.position.z);
     //target_pose.pose.pose.orientation = cur_pose.pose.pose.orientation;
+    }
 }
 
 void RobotFSM::handleReadQRCode(Event event) {
