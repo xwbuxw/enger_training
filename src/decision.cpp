@@ -2,6 +2,7 @@
 #include "state_machine_.h"
 #include <ros/ros.h>
 
+extern std::vector<std::tuple<int, int, int>> coordinates(4);
 
 // nav_msgs::Odometry cur_pose;
 // nav_msgs::Odometry target_pose;
@@ -16,6 +17,15 @@ int main(int argc, char **argv) {
     ros::NodeHandle nh;
     ros::Rate rate(50);
     RobotFSM fsm;
+
+    // 初始化坐标值
+    coordinates = {
+        {1, 2, 3},
+        {3, 4, 3},
+        {5, 6, 3},
+        {7, 8, 3}
+    };
+    
     ros::Subscriber curr_pose_sub = nh.subscribe<nav_msgs::Odometry>
         ("/aft_mapped_to_init", 10, cur_pose_cb);
     ros::Publisher tar_pose_pub = nh.advertise<nav_msgs::Odometry>("/target_pose", 10);

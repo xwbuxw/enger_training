@@ -6,7 +6,7 @@
 #include <tf/transform_datatypes.h>
 #include <tf2/LinearMath/Transform.h>
 #include <tf2/LinearMath/Quaternion.h>
-nav_msgs::Odometry trans_global2car(const nav_msgs::Odometry& target_pose, const nav_msgs::Odometry& cur_pose) {
+nav_msgs::Odometry trans_global2car(const nav_msgs::Odometry& target_pose, const nav_msgs::Odometry& cur_pose, double target_yaw) {
     // 提取 cur_pose 中的旋转信息并生成 tf2 Transform
     tf2::Transform cur_transform;
     tf2::Quaternion cur_orientation;
@@ -26,13 +26,13 @@ nav_msgs::Odometry trans_global2car(const nav_msgs::Odometry& target_pose, const
     transformed_odom.pose.pose.position.y = transformed_position.y();
     transformed_odom.pose.pose.position.z = transformed_position.z();
 
-    double tar_yaw = tf::getYaw(cur_pose.pose.pose.orientation)+M_PI_2;
+    double tar_yaw = tf::getYaw(cur_pose.pose.pose.orientation)+target_yaw;
         if (tar_yaw < -M_PI) {
         tar_yaw += 2 * M_PI;
         }
-        tf2::Quaternion target_q;
-        target_q.setRPY(0,0,tar_yaw);
-        geometry_msgs::Quaternion target_orientation = tf2::toMsg(target_q);
+    tf2::Quaternion target_q;
+    target_q.setRPY(0,0,tar_yaw);
+    geometry_msgs::Quaternion target_orientation = tf2::toMsg(target_q);
         
     transformed_odom.pose.pose.orientation = target_orientation;
 
