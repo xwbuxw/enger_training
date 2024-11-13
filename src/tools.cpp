@@ -19,6 +19,7 @@ nav_msgs::Odometry trans_global2car(const nav_msgs::Odometry& target_pose, const
     tf2::Transform cur_transform;
     tf2::Quaternion cur_orientation;
     tf2::fromMsg(cur_pose.pose.pose.orientation, cur_orientation);
+    cur_orientation.normalize();
     cur_transform.setRotation(cur_orientation);
     cur_transform.setOrigin(tf2::Vector3(cur_pose.pose.pose.position.x, cur_pose.pose.pose.position.y, cur_pose.pose.pose.position.z));
 
@@ -33,19 +34,19 @@ nav_msgs::Odometry trans_global2car(const nav_msgs::Odometry& target_pose, const
     transformed_odom.pose.pose.position.x = transformed_position.x();
     transformed_odom.pose.pose.position.y = transformed_position.y();
     transformed_odom.pose.pose.position.z = transformed_position.z();
+    ROS_INFO("Transformed target position: (%f, %f, %f)", transformed_odom.pose.pose.position.x, transformed_odom.pose.pose.position.y, transformed_odom.pose.pose.position.z);
 
-    double tar_yaw = tf::getYaw(cur_pose.pose.pose.orientation)+target_yaw;
-        if (tar_yaw < -M_PI) {
-        tar_yaw += 2 * M_PI;
-        }
-    tf2::Quaternion target_q;
-    target_q.setRPY(0,0,tar_yaw);
-    geometry_msgs::Quaternion target_orientation = tf2::toMsg(target_q);
-        
-    transformed_odom.pose.pose.orientation = target_orientation;
+    // 将 target_yaw 转换为局部坐标系下的四元数
+    tf2::Quaternion target_yaw_quaternion;
+    target_yaw_quaternion.setRPY(0, 0, target_yaw);
+    tf2::Quaternion transformed_orientation = cur_orientation.inverse() * target_yaw_quaternion * cur_orientation;
+
+    // 将变换后的姿态四元数赋值到输出的对象中
+    transformed_odom.pose.pose.orientation = tf2::toMsg(transformed_orientation);
 
     return transformed_odom;
 }
+
 
 void add_tar_pose(float x, float y, float yaw) {
     set_target_poses add_tar_pose_pose;

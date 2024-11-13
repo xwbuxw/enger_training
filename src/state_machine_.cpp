@@ -67,10 +67,10 @@ void RobotFSM::handleInit(Event event){//在这里加入一键启动代码，现
         currentState = State::TEST;
         ROS_INFO("TEST_START!");
     }
-        add_tar_pose(1, 2, 0);
-        add_tar_pose(5, 5, 0);
-        add_tar_pose(16, 6, 0);
-        add_tar_pose(9, 8, 0);
+        add_tar_pose(1, 2, 0.5);
+        add_tar_pose(5, 5, 0.5);
+        add_tar_pose(16, 6, 0.5);
+        add_tar_pose(9, 8, 0.5);
         
         set_target_pose.pose.pose.position.x = set_tar_poses[set_tar_pose_index].x;
         set_target_pose.pose.pose.position.y = set_tar_poses[set_tar_pose_index].y;
