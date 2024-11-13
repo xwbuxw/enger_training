@@ -6,6 +6,13 @@
 #include <tf/transform_datatypes.h>
 #include <tf2/LinearMath/Transform.h>
 #include <tf2/LinearMath/Quaternion.h>
+#include <vector>
+#include "state_machine_.h"
+
+
+
+
+
 nav_msgs::Odometry trans_global2car(const nav_msgs::Odometry& target_pose, const nav_msgs::Odometry& cur_pose, double target_yaw) {
     // 提取 cur_pose 中的旋转信息并生成 tf2 Transform
     tf2::Transform cur_transform;
@@ -37,4 +44,14 @@ nav_msgs::Odometry trans_global2car(const nav_msgs::Odometry& target_pose, const
     transformed_odom.pose.pose.orientation = target_orientation;
 
     return transformed_odom;
+}
+
+void add_tar_pose(double x, double y, double yaw) {
+    set_target_poses add_tar_pose_pose;
+    add_tar_pose_pose.x = x;
+    add_tar_pose_pose.y = y;
+    add_tar_pose_pose.yaw = yaw;
+
+    set_tar_poses.push_back(add_tar_pose_pose);
+    ROS_INFO("Added waypoint: (%.2f, %.2f, %.2f)", x, y, yaw);
 }

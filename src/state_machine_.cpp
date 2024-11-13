@@ -16,8 +16,11 @@ nav_msgs::Odometry cur_pose;
 nav_msgs::Odometry pub_target_pose;
 nav_msgs::Odometry set_target_pose;
 int set_tar_pose_index = 0;
+float set_tar_yaw = 0;
 
-std::vector<std::tuple<int, int, int>> coordinates(4) ;
+
+
+
     
 
 void RobotFSM::processEvent(Event event) {
@@ -68,9 +71,10 @@ void RobotFSM::handleInit(Event event){//在这里加入一键启动代码，现
     }
     
         
-        set_target_pose.pose.pose.position.x = std::get<0>(coordinates[set_tar_pose_index]);
-        set_target_pose.pose.pose.position.y = coordinates[set_tar_pose_index];
-        pub_target_pose = trans_global2car( set_target_pose,cur_pose);
+        set_target_pose.pose.pose.position.x = set_tar_poses[set_tar_pose_index].x;
+        set_target_pose.pose.pose.position.y = set_tar_poses[set_tar_pose_index].y;
+        set_tar_yaw = set_tar_poses[set_tar_pose_index].yaw;
+        pub_target_pose = trans_global2car( set_target_pose,cur_pose, set_tar_yaw);
         
         //target_pose.pose.pose.position.x-=0.5;
     

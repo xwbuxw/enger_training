@@ -3,10 +3,13 @@
 
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
+#include <vector>
 
 extern nav_msgs::Odometry cur_pose;
 extern nav_msgs::Odometry pub_target_pose;
 extern nav_msgs::Odometry set_target_pose;
+
+
 
 enum class State {
     INIT,
