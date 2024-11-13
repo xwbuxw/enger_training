@@ -10,6 +10,7 @@
 #include "state_machine_.h"
 
 
+std::vector<set_target_poses> set_tar_poses;
 
 
 
@@ -46,12 +47,13 @@ nav_msgs::Odometry trans_global2car(const nav_msgs::Odometry& target_pose, const
     return transformed_odom;
 }
 
-void add_tar_pose(double x, double y, double yaw) {
+void add_tar_pose(float x, float y, float yaw) {
     set_target_poses add_tar_pose_pose;
     add_tar_pose_pose.x = x;
     add_tar_pose_pose.y = y;
     add_tar_pose_pose.yaw = yaw;
 
+    
     set_tar_poses.push_back(add_tar_pose_pose);
     ROS_INFO("Added waypoint: (%.2f, %.2f, %.2f)", x, y, yaw);
 }
