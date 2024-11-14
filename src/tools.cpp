@@ -25,8 +25,7 @@ nav_msgs::Odometry trans_global2car(const nav_msgs::Odometry& target_pose, const
 
     // 验证 cur_orientation
 if (!std::isfinite(cur_orientation.x()) || !std::isfinite(cur_orientation.y()) || !std::isfinite(cur_orientation.z()) || !std::isfinite(cur_orientation.w())) {
-    ROS_ERROR("nnnnnnnnnnnn");
-    
+    ROS_ERROR("cur_orientation is usaless");
 }
 
     // 提取 target_pose 的位置并生成 tf2 Vector3
@@ -45,7 +44,7 @@ if (!std::isfinite(cur_orientation.x()) || !std::isfinite(cur_orientation.y()) |
 
 // 在逆运算和乘法之后，检查 transformed_position
 if (!std::isfinite(transformed_position.x()) || !std::isfinite(transformed_position.y()) || !std::isfinite(transformed_position.z())) {
-    ROS_ERROR("333333333333");
+    ROS_ERROR("transformed_position is usaless");
     
 }
 
