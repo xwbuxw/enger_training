@@ -18,10 +18,10 @@ int main(int argc, char **argv) {
     ros::Rate rate(50);
     RobotFSM fsm;
 
-    add_tar_pose(8, 0, 0);
-        add_tar_pose(5, 5, 0.5);
-        add_tar_pose(16, 6, 0.5);
-        add_tar_pose(9, 8, 0.5);    
+    add_tar_pose(0.5, 0, 0);
+        add_tar_pose(0.5, 0, 3.1415/2);
+        add_tar_pose(0.5, 0.5, 3.1415/2);
+        add_tar_pose(0.5, 0.5, 3.1415);    
 
     
     ros::Subscriber curr_pose_sub = nh.subscribe<nav_msgs::Odometry>

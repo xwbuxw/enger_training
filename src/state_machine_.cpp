@@ -75,18 +75,23 @@ void RobotFSM::handleInit(Event event){//在这里加入一键启动代码，现
         set_tar_yaw = set_tar_poses[set_tar_pose_index].yaw;
         pub_target_pose = trans_global2car( set_target_pose, cur_pose, set_tar_yaw);
         
+        //ROS_INFO("pubtarx: (%.2f)", pub_target_pose.pose.pose.position.x);
+        
         //target_pose.pose.pose.position.x-=0.5;
     
     //ROS_INFO("x=%.2f,y=%.2f,z=%.2f",cur_pose.pose.pose.position.x,cur_pose.pose.pose.position.y,cur_pose.pose.pose.position.z);
     double x_error = set_target_pose.pose.pose.position.x - cur_pose.pose.pose.position.x;
     double y_error = set_target_pose.pose.pose.position.y - cur_pose.pose.pose.position.y;
-    
+    //ROS_INFO("error_y:%d",cur_pose_is_ok);
+    ROS_INFO("index:%d",set_tar_pose_index); 
     if(cur_pose_is_ok == 1){
-        if(fabs(x_error)<0.05 && fabs(y_error)<0.05){
+        if(fabs(x_error)<0.05 && fabs(y_error)<0.05 && yaw_is_ok == 1){
+            yaw_is_ok = 0;
         ROS_INFO("arrived!");
-        if(set_tar_pose_index < set_tar_poses.size()) {
+        if(set_tar_pose_index < set_tar_poses.size() - 1) {
             set_tar_pose_index ++;
-        }    
+        }
+   
         //currentState = State::COMPLETE;
         }
     
