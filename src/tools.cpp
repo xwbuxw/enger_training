@@ -11,7 +11,7 @@
 
 
 std::vector<set_target_poses> set_tar_poses;
-
+bool cur_pose_is_ok = false;
 
 
 nav_msgs::Odometry trans_global2car(const nav_msgs::Odometry& target_pose, const nav_msgs::Odometry& cur_pose, double target_yaw) {
@@ -26,6 +26,8 @@ nav_msgs::Odometry trans_global2car(const nav_msgs::Odometry& target_pose, const
     // 验证 cur_orientation
 if (!std::isfinite(cur_orientation.x()) || !std::isfinite(cur_orientation.y()) || !std::isfinite(cur_orientation.z()) || !std::isfinite(cur_orientation.w())) {
     ROS_ERROR("cur_orientation is usaless");
+} else {
+    bool cur_pose_is_ok = true;
 }
 
     // 提取 target_pose 的位置并生成 tf2 Vector3
@@ -42,11 +44,10 @@ if (!std::isfinite(cur_orientation.x()) || !std::isfinite(cur_orientation.y()) |
 
     ROS_INFO("Transformed target position: (%.2f, %.2f, %.2f)", transformed_odom.pose.pose.position.x, transformed_odom.pose.pose.position.y, transformed_odom.pose.pose.position.z);
 
-// 在逆运算和乘法之后，检查 transformed_position
-if (!std::isfinite(transformed_position.x()) || !std::isfinite(transformed_position.y()) || !std::isfinite(transformed_position.z())) {
-    ROS_ERROR("transformed_position is usaless");
-    
-}
+    // 在逆运算和乘法之后，检查 transformed_position
+    if (!std::isfinite(transformed_position.x()) || !std::isfinite(transformed_position.y()) || !std::isfinite(transformed_position.z())) {
+        ROS_ERROR("transformed_position is usaless");
+    }
 
     // 计算目标偏航角并归一化至 [-π, π]
     double tar_yaw = tf::getYaw(cur_pose.pose.pose.orientation) + target_yaw;
@@ -55,7 +56,7 @@ if (!std::isfinite(transformed_position.x()) || !std::isfinite(transformed_posit
 
     // 将 target_yaw 转换为局部坐标系下的四元数
     tf2::Quaternion target_yaw_quaternion;
-    target_yaw_quaternion.setRPY(0, 0, target_yaw);
+    target_yaw_quaternion.setRPY(0, 0, tar_yaw);
     tf2::Quaternion transformed_orientation = cur_orientation.inverse() * target_yaw_quaternion * cur_orientation;
 
     // 构造目标姿态的四元数并赋值

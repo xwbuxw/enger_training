@@ -15,7 +15,7 @@
 nav_msgs::Odometry cur_pose;
 nav_msgs::Odometry pub_target_pose;
 nav_msgs::Odometry set_target_pose;
-int set_tar_pose_index = 1;
+int set_tar_pose_index = 0;
 float set_tar_yaw = 0;
 float eg = 0;
 
@@ -81,11 +81,14 @@ void RobotFSM::handleInit(Event event){//在这里加入一键启动代码，现
     double x_error = set_target_pose.pose.pose.position.x - cur_pose.pose.pose.position.x;
     double y_error = set_target_pose.pose.pose.position.y - cur_pose.pose.pose.position.y;
     
-    if(fabs(x_error)<0.05 && fabs(y_error)<0.05){
+    if(cur_pose_is_ok == 1){
+        if(fabs(x_error)<0.05 && fabs(y_error)<0.05){
         ROS_INFO("arrived!");
         set_tar_pose_index ++;
         //currentState = State::COMPLETE;
+        }
     }
+    
     // ROS_INFO("x=%.2f,y=%.2f,z=%.2f",
     // target_pose.pose.pose.position.x,target_pose.pose.pose.position.y,target_pose.pose.pose.position.z);
     //target_pose.pose.pose.orientation = cur_pose.pose.pose.orientation;
