@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
     ros::Rate rate(50);
     RobotFSM fsm;
 
-    add_tar_pose(0.4, 0, 0.0);
+    add_tar_pose(0.5, 0, 0.0);
     //add_tar_pose(0.4, 0.4, 0);
     // add_tar_pose(16, 6, 0.5);
     // add_tar_pose(9, 8, 0.5);    
