@@ -50,22 +50,15 @@ if (!std::isfinite(cur_orientation.x()) || !std::isfinite(cur_orientation.y()) |
     }
 
     // 计算目标偏航角并归一化至 [-π, π]
-    double tar_yaw = tf::getYaw(cur_pose.pose.pose.orientation) + target_yaw;
+    double tar_yaw = target_yaw - tf::getYaw(cur_pose.pose.pose.orientation)  ;
     while (tar_yaw < -M_PI) tar_yaw += 2 * M_PI;
     while (tar_yaw > M_PI) tar_yaw -= 2 * M_PI;
-
-    // 将 target_yaw 转换为局部坐标系下的四元数
-    tf2::Quaternion target_yaw_quaternion;
-    target_yaw_quaternion.setRPY(0, 0, tar_yaw);
-    tf2::Quaternion transformed_orientation = cur_orientation.inverse() * target_yaw_quaternion * cur_orientation;
-
+    ROS_INFO("Transformed target yaw: (%.2f, )",tar_yaw );
     // 构造目标姿态的四元数并赋值
     tf2::Quaternion target_q;
     target_q.setRPY(0, 0, tar_yaw);
     target_q.normalize();
     transformed_odom.pose.pose.orientation = tf2::toMsg(target_q);
-
-    
 
     return transformed_odom;
 }

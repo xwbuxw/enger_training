@@ -68,6 +68,20 @@ void RobotFSM::handleInit(Event event){//在这里加入一键启动代码，现
         ROS_INFO("TEST_START!");
     }
         
+
+ cur_pose.pose.pose.position.x = 1;
+    cur_pose.pose.pose.position.y = 6;
+    cur_pose.pose.pose.position.z = 0.0;
+
+    // 初始化方向（Orientation），使用单位四元数表示无旋转
+    cur_pose.pose.pose.orientation.x = 0.0;
+    cur_pose.pose.pose.orientation.y = 0.0;
+    cur_pose.pose.pose.orientation.z = 0.0;
+    cur_pose.pose.pose.orientation.w = 1;
+
+
+
+
         set_target_pose.pose.pose.position.x = set_tar_poses[set_tar_pose_index].x;
         set_target_pose.pose.pose.position.y = set_tar_poses[set_tar_pose_index].y;
         ROS_INFO("set_target_pose.pose.pose.position: (%.2f, %.2f)", set_target_pose.pose.pose.position.x, set_target_pose.pose.pose.position.y);
@@ -84,15 +98,17 @@ void RobotFSM::handleInit(Event event){//在这里加入一键启动代码，现
     if(cur_pose_is_ok == 1){
         if(fabs(x_error)<0.05 && fabs(y_error)<0.05){
         ROS_INFO("arrived!");
-        set_tar_pose_index ++;
+        if(set_tar_pose_index < set_tar_poses.size()) {
+            set_tar_pose_index ++;
+        }    
         //currentState = State::COMPLETE;
         }
-    }
+    
     
     // ROS_INFO("x=%.2f,y=%.2f,z=%.2f",
     // target_pose.pose.pose.position.x,target_pose.pose.pose.position.y,target_pose.pose.pose.position.z);
     //target_pose.pose.pose.orientation = cur_pose.pose.pose.orientation;
-    
+    } 
 }
 
 void RobotFSM::handleReadQRCode(Event event) {
