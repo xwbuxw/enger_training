@@ -23,6 +23,12 @@ nav_msgs::Odometry trans_global2car(const nav_msgs::Odometry& target_pose, const
     cur_transform.setRotation(cur_orientation);
     cur_transform.setOrigin(tf2::Vector3(cur_pose.pose.pose.position.x, cur_pose.pose.pose.position.y, cur_pose.pose.pose.position.z));
 
+    // 验证 cur_orientation
+if (!std::isfinite(cur_orientation.x()) || !std::isfinite(cur_orientation.y()) || !std::isfinite(cur_orientation.z()) || !std::isfinite(cur_orientation.w())) {
+    ROS_ERROR("nnnnnnnnnnnn");
+    
+}
+
     // 提取 target_pose 的位置并生成 tf2 Vector3
     tf2::Vector3 target_position(target_pose.pose.pose.position.x, target_pose.pose.pose.position.y, target_pose.pose.pose.position.z);
 
@@ -34,19 +40,35 @@ nav_msgs::Odometry trans_global2car(const nav_msgs::Odometry& target_pose, const
     transformed_odom.pose.pose.position.x = transformed_position.x();
     transformed_odom.pose.pose.position.y = transformed_position.y();
     transformed_odom.pose.pose.position.z = transformed_position.z();
-    ROS_INFO("Transformed target position: (%f, %f, %f)", transformed_odom.pose.pose.position.x, transformed_odom.pose.pose.position.y, transformed_odom.pose.pose.position.z);
+
+    ROS_INFO("Transformed target position: (%.2f, %.2f, %.2f)", transformed_odom.pose.pose.position.x, transformed_odom.pose.pose.position.y, transformed_odom.pose.pose.position.z);
+
+// 在逆运算和乘法之后，检查 transformed_position
+if (!std::isfinite(transformed_position.x()) || !std::isfinite(transformed_position.y()) || !std::isfinite(transformed_position.z())) {
+    ROS_ERROR("333333333333");
+    
+}
+
+    // 计算目标偏航角并归一化至 [-π, π]
+    double tar_yaw = tf::getYaw(cur_pose.pose.pose.orientation) + target_yaw;
+    while (tar_yaw < -M_PI) tar_yaw += 2 * M_PI;
+    while (tar_yaw > M_PI) tar_yaw -= 2 * M_PI;
 
     // 将 target_yaw 转换为局部坐标系下的四元数
     tf2::Quaternion target_yaw_quaternion;
     target_yaw_quaternion.setRPY(0, 0, target_yaw);
     tf2::Quaternion transformed_orientation = cur_orientation.inverse() * target_yaw_quaternion * cur_orientation;
 
-    // 将变换后的姿态四元数赋值到输出的对象中
-    transformed_odom.pose.pose.orientation = tf2::toMsg(transformed_orientation);
+    // 构造目标姿态的四元数并赋值
+    tf2::Quaternion target_q;
+    target_q.setRPY(0, 0, tar_yaw);
+    target_q.normalize();
+    transformed_odom.pose.pose.orientation = tf2::toMsg(target_q);
+
+    
 
     return transformed_odom;
 }
-
 
 void add_tar_pose(float x, float y, float yaw) {
     set_target_poses add_tar_pose_pose;
