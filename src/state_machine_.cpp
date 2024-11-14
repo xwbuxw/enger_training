@@ -68,20 +68,6 @@ void RobotFSM::handleInit(Event event){//在这里加入一键启动代码，现
         ROS_INFO("TEST_START!");
     }
         
-
- cur_pose.pose.pose.position.x = 1;
-    cur_pose.pose.pose.position.y = 6;
-    cur_pose.pose.pose.position.z = 0.0;
-
-    // 初始化方向（Orientation），使用单位四元数表示无旋转
-    cur_pose.pose.pose.orientation.x = 0.0;
-    cur_pose.pose.pose.orientation.y = 0.0;
-    cur_pose.pose.pose.orientation.z = 0.0;
-    cur_pose.pose.pose.orientation.w = 1;
-
-
-
-
         set_target_pose.pose.pose.position.x = set_tar_poses[set_tar_pose_index].x;
         set_target_pose.pose.pose.position.y = set_tar_poses[set_tar_pose_index].y;
         ROS_INFO("set_target_pose.pose.pose.position: (%.2f, %.2f)", set_target_pose.pose.pose.position.x, set_target_pose.pose.pose.position.y);
