@@ -11,6 +11,7 @@
 
 
 std::vector<set_target_poses> set_tar_poses;
+bool cur_pose_is_ok = false;
 
 
 
@@ -26,6 +27,8 @@ nav_msgs::Odometry trans_global2car(const nav_msgs::Odometry& target_pose, const
     // 验证 cur_orientation
 if (!std::isfinite(cur_orientation.x()) || !std::isfinite(cur_orientation.y()) || !std::isfinite(cur_orientation.z()) || !std::isfinite(cur_orientation.w())) {
     ROS_ERROR("cur_orientation is usaless");
+} else {
+    cur_pose_is_ok = true;
 }
 
     // 提取 target_pose 的位置并生成 tf2 Vector3
