@@ -17,7 +17,7 @@ nav_msgs::Odometry pub_target_pose;
 nav_msgs::Odometry set_target_pose;
 int set_tar_pose_index = 0;
 float set_tar_yaw = 0;
-float eg = 0;
+
 
 
 
@@ -70,22 +70,15 @@ void RobotFSM::handleInit(Event event){//在这里加入一键启动代码，现
         
         set_target_pose.pose.pose.position.x = set_tar_poses[set_tar_pose_index].x;
         set_target_pose.pose.pose.position.y = set_tar_poses[set_tar_pose_index].y;
-        ROS_INFO("set_target_pose.pose.pose.position: (%.2f, %.2f)", set_target_pose.pose.pose.position.x, set_target_pose.pose.pose.position.y);
-
         set_tar_yaw = set_tar_poses[set_tar_pose_index].yaw;
+        ROS_INFO("set_target_pose.pose.pose.position: (%.2f, %.2f, %.2f)", set_target_pose.pose.pose.position.x, set_target_pose.pose.pose.position.y, set_tar_yaw);
+
         pub_target_pose = trans_global2car( set_target_pose, cur_pose, set_tar_yaw);
-        
-        //ROS_INFO("pubtarx: (%.2f)", pub_target_pose.pose.pose.position.x);
-        
-        //target_pose.pose.pose.position.x-=0.5;
+
     
-    //ROS_INFO("x=%.2f,y=%.2f,z=%.2f",cur_pose.pose.pose.position.x,cur_pose.pose.pose.position.y,cur_pose.pose.pose.position.z);
-    double x_error = set_target_pose.pose.pose.position.x - cur_pose.pose.pose.position.x;
-    double y_error = set_target_pose.pose.pose.position.y - cur_pose.pose.pose.position.y;
-    //ROS_INFO("error_y:%d",cur_pose_is_ok);
-    ROS_INFO("index:%d",set_tar_pose_index); 
+        ROS_INFO("index:%d",set_tar_pose_index); 
     if(cur_pose_is_ok == 1){
-        if(fabs(x_error)<0.05 && fabs(y_error)<0.05 && yaw_is_ok == 1){
+        if(fabs(pub_target_pose.pose.pose.position.x)<0.05 && fabs(pub_target_pose.pose.pose.position.y)<0.05 && yaw_is_ok == 1){
             yaw_is_ok = 0;
         ROS_INFO("arrived!");
         if(set_tar_pose_index < set_tar_poses.size() - 1) {
