@@ -124,9 +124,10 @@ include_directories(
 # )
 
 add_executable(decision_making_node src/decision.cpp src/state_machine_.cpp src/tools.cpp)
-
+add_executable(tftree src/tftree.cpp)
 
 target_link_libraries(decision_making_node ${catkin_LIBRARIES} )
+target_link_libraries(tftree ${catkin_LIBRARIES} )
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
