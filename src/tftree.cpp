@@ -26,14 +26,35 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr& msg) {
     // 执行坐标系变换
     tf2::Transform base_pose = laser_to_base * laser_pose;
 
+    // 从 base_pose 提取xyz 
+    tf2::Vector3 translation = base_pose.getOrigin();
+    tf2::Quaternion rotation = base_pose.getRotation();
+
     
-    geometry_msgs::Odometry base_pose_msg;
-    base_pose_msg = tf2::toMsg(base_pose);
+
+    // 分别获取位移和四元数
+    double car_x = translation.x();
+    double car_y = translation.y();
+    double car_z = translation.z();
+    double car_qx = rotation.x();
+    double car_qy = rotation.y();
+    double car_qz = rotation.z();
+    double car_qw = rotation.w();
+
+    // 输出到日志或其他地方（示例：打印日志）
+    ROS_INFO("TFTree Transformed Pose: x=%.3f, y=%.3f, z=%.3f, qx=%.3f, qy=%.3f, qz=%.3f, qw=%.3f",
+             car_x, car_y, car_z, car_qx, car_qy, car_qz, car_qw);
 
     // 转换回 ROS 消息类型
     nav_msgs::Odometry transformed_odom = *msg; // 复制原消息
     transformed_odom.header.frame_id = "base_link"; // 更新坐标系
-    transformed_odom.pose.pose = base_pose_msg.pose.pose;
+    transformed_odom.pose.pose.position.x = car_x;
+    transformed_odom.pose.pose.position.y = car_y;
+    transformed_odom.pose.pose.position.z = car_z;
+    transformed_odom.pose.pose.orientation.x = car_qx;
+    transformed_odom.pose.pose.orientation.y = car_qy;
+    transformed_odom.pose.pose.orientation.z = car_qz;
+    transformed_odom.pose.pose.orientation.w = car_qw;
 
     // 发布转换后的数据
     car_pose_puber.publish(transformed_odom);
