@@ -12,6 +12,7 @@
 
 std::vector<set_target_poses> set_tar_poses;
 bool cur_pose_is_ok = false;
+bool yaw_is_ok = false;
 
 
 nav_msgs::Odometry trans_global2car(const nav_msgs::Odometry& target_pose, const nav_msgs::Odometry& cur_pose, double target_yaw) {
@@ -27,7 +28,7 @@ nav_msgs::Odometry trans_global2car(const nav_msgs::Odometry& target_pose, const
 if (!std::isfinite(cur_orientation.x()) || !std::isfinite(cur_orientation.y()) || !std::isfinite(cur_orientation.z()) || !std::isfinite(cur_orientation.w())) {
     ROS_ERROR("cur_orientation is usaless");
 } else {
-    bool cur_pose_is_ok = true;
+    cur_pose_is_ok = 1;
 }
 
     // 提取 target_pose 的位置并生成 tf2 Vector3
@@ -42,8 +43,6 @@ if (!std::isfinite(cur_orientation.x()) || !std::isfinite(cur_orientation.y()) |
     transformed_odom.pose.pose.position.y = transformed_position.y();
     transformed_odom.pose.pose.position.z = transformed_position.z();
 
-    ROS_INFO("Transformed target position: (%.2f, %.2f, %.2f)", transformed_odom.pose.pose.position.x, transformed_odom.pose.pose.position.y, transformed_odom.pose.pose.position.z);
-
     // 在逆运算和乘法之后，检查 transformed_position
     if (!std::isfinite(transformed_position.x()) || !std::isfinite(transformed_position.y()) || !std::isfinite(transformed_position.z())) {
         ROS_ERROR("transformed_position is usaless");
@@ -54,12 +53,17 @@ if (!std::isfinite(cur_orientation.x()) || !std::isfinite(cur_orientation.y()) |
     while (tar_yaw < -M_PI) tar_yaw += 2 * M_PI;
     while (tar_yaw > M_PI) tar_yaw -= 2 * M_PI;
     ROS_INFO("Transformed target yaw: (%.2f, )",tar_yaw );
+    if(tar_yaw < 0.03) {
+        yaw_is_ok = true;
+    }
     // 构造目标姿态的四元数并赋值
     tf2::Quaternion target_q;
     target_q.setRPY(0, 0, tar_yaw);
     target_q.normalize();
     transformed_odom.pose.pose.orientation = tf2::toMsg(target_q);
+    
 
+    ROS_INFO("Transformed target position: (%.2f, %.2f, %.2f)", transformed_odom.pose.pose.position.x, transformed_odom.pose.pose.position.y, transformed_odom.pose.pose.position.z);
     return transformed_odom;
 }
 
