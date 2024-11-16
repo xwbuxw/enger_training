@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
 
     // 订阅雷达的 Odometry 数据
-    ros::Subscriber odom_sub = nh.subscribe<nav_msgs::Odometry>("laser_odom", 10, odomCallback);
+    ros::Subscriber odom_sub = nh.subscribe<nav_msgs::Odometry>("/aft_mapped_to_init", 10, odomCallback);
 
     // 发布转换后的 Odometry 数据
     car_pose_puber = nh.advertise<nav_msgs::Odometry>("car_pose", 10);
