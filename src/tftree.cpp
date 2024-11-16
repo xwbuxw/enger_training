@@ -26,10 +26,14 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr& msg) {
     // 执行坐标系变换
     tf2::Transform base_pose = laser_to_base * laser_pose;
 
+    
+    geometry_msgs::Odometry base_pose_msg;
+    base_pose_msg = tf2::toMsg(base_pose);
+
     // 转换回 ROS 消息类型
     nav_msgs::Odometry transformed_odom = *msg; // 复制原消息
     transformed_odom.header.frame_id = "base_link"; // 更新坐标系
-    transformed_odom.pose.pose = tf2::toMsg(base_pose);
+    transformed_odom.pose.pose = base_pose_msg.pose.pose;
 
     // 发布转换后的数据
     car_pose_puber.publish(transformed_odom);
