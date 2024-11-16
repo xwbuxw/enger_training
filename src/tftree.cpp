@@ -5,7 +5,7 @@
 #include <nav_msgs/Odometry.h>
 
 // 全局发布器
-ros::Publisher transformed_odom_pub;
+ros::Publisher car_pose_puber;
 
 // 偏移量（根据实际情况修改）
 const double x_offset = -0.3; // 雷达到车身中心的 x 偏移
@@ -32,7 +32,7 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr& msg) {
     transformed_odom.pose.pose = tf2::toMsg(base_pose);
 
     // 发布转换后的数据
-    transformed_odom_pub.publish(transformed_odom);
+    car_pose_puber.publish(transformed_odom);
 }
 
 int main(int argc, char** argv) {
@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
     ros::Subscriber odom_sub = nh.subscribe<nav_msgs::Odometry>("laser_odom", 10, odomCallback);
 
     // 发布转换后的 Odometry 数据
-    transformed_odom_pub = nh.advertise<nav_msgs::Odometry>("base_odom", 10);
+    car_pose_puber = nh.advertise<nav_msgs::Odometry>("car_pose", 10);
 
     ROS_INFO("Laser to Base Transformer Node started.");
     ros::spin();
