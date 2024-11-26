@@ -52,7 +52,6 @@ if (!std::isfinite(cur_orientation.x()) || !std::isfinite(cur_orientation.y()) |
     double tar_yaw = target_yaw - tf::getYaw(cur_pose.pose.pose.orientation)  ;
     while (tar_yaw < -M_PI) tar_yaw += 2 * M_PI;
     while (tar_yaw > M_PI) tar_yaw -= 2 * M_PI;
-    ROS_INFO("Transformed target yaw: (%.2f, )",tar_yaw );
     if(tar_yaw < 0.03) {
         yaw_is_ok = true;
     }
