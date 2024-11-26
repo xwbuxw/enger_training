@@ -72,8 +72,10 @@ void add_tar_pose(float x, float y, float yaw) {
     add_tar_pose_pose.x = x;
     add_tar_pose_pose.y = y;
     add_tar_pose_pose.yaw = yaw;
-
-    
     set_tar_poses.push_back(add_tar_pose_pose);
     ROS_INFO("Added waypoint: (%.2f, %.2f, %.2f)", x, y, yaw);
+}
+
+void reset_tar_pose() {
+    set_tar_poses.clear();
 }

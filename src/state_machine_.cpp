@@ -19,14 +19,43 @@ int set_tar_pose_index = 0;
 float set_tar_yaw = 0;
 float eg = 0;
 
+void move(){
+    set_target_pose.pose.pose.position.x = set_tar_poses[set_tar_pose_index].x;
+    set_target_pose.pose.pose.position.y = set_tar_poses[set_tar_pose_index].y;
+    ROS_INFO("set_target_pose.pose.pose.position: (%.2f, %.2f)", set_target_pose.pose.pose.position.x, set_target_pose.pose.pose.position.y);
 
+    set_tar_yaw = set_tar_poses[set_tar_pose_index].yaw;
+    pub_target_pose = trans_global2car( set_target_pose, cur_pose, set_tar_yaw);
+    
+    //ROS_INFO("pubtarx: (%.2f)", pub_target_pose.pose.pose.position.x);
+    
+    //target_pose.pose.pose.position.x-=0.5;
+    
+    //ROS_INFO("x=%.2f,y=%.2f,z=%.2f",cur_pose.pose.pose.position.x,cur_pose.pose.pose.position.y,cur_pose.pose.pose.position.z);
+    double x_error = set_target_pose.pose.pose.position.x - cur_pose.pose.pose.position.x;
+    double y_error = set_target_pose.pose.pose.position.y - cur_pose.pose.pose.position.y;
+    //ROS_INFO("error_y:%d",cur_pose_is_ok);
+    ROS_INFO("index:%d",set_tar_pose_index); 
+    if(cur_pose_is_ok == 1){
+        if(fabs(x_error)<0.05 && fabs(y_error)<0.05 && yaw_is_ok == 1){
+            yaw_is_ok = 0;
+        ROS_INFO("arrived!");
+        if(set_tar_pose_index < set_tar_poses.size() - 1) {
+            set_tar_pose_index ++;
+        }
+        //currentState = State::COMPLETE;
+        }
+    // ROS_INFO("x=%.2f,y=%.2f,z=%.2f",
+    // target_pose.pose.pose.position.x,target_pose.pose.pose.position.y,target_pose.pose.pose.position.z);
+    //target_pose.pose.pose.orientation = cur_pose.pose.pose.orientation;
+    }
+}
 
 void RobotFSM::processEvent(Event event) {
     nav_msgs::Odometry return_value;
     switch (currentState) {
-        case State::TEST:
-            handleInit(event);
-            //ROS_INFO("process_init");
+        case State::INIT:
+            handleInit(event);//首先执行这个，用于检查机器状态
             break;
         case State::READ_QR_CODE:
             handleReadQRCode(event);
@@ -35,10 +64,10 @@ void RobotFSM::processEvent(Event event) {
             handleFetchFirstBatch(event);
             break;
         case State::DELIVER_TO_PROCESSING:
-            handleDeliverToProcessing(event);
+            handleDeliverToProcessing(event);//然后执行这个，开到粗加工区
             break;
         case State::STORE_FIRST_BATCH:
-            handleStoreFirstBatch(event);
+            handleStoreFirstBatch(event);//最后执行这个，放置物体
             break;
         case State::FETCH_SECOND_BATCH:
             handleFetchSecondBatch(event);
@@ -61,45 +90,16 @@ void RobotFSM::processEvent(Event event) {
 //     ROS_INFO("process_init");
 // }
 
-void RobotFSM::handleInit(Event event){//在这里加入一键启动代码，现在模拟一键启动
-    fechting_order = 0;
-    if (event != Event::TEST) {
-        currentState = State::TEST;
-        ROS_INFO("TEST_START!");
+void RobotFSM::handleInit(Event event){
+    ROS_INFO("MISSION_START!");
+    while(cur_pose.pose.pose.position.x == 0);
+    {
+        ROS_INFO("Waiting for SLAM to initialize...");
     }
-        
-        set_target_pose.pose.pose.position.x = set_tar_poses[set_tar_pose_index].x;
-        set_target_pose.pose.pose.position.y = set_tar_poses[set_tar_pose_index].y;
-        ROS_INFO("set_target_pose.pose.pose.position: (%.2f, %.2f)", set_target_pose.pose.pose.position.x, set_target_pose.pose.pose.position.y);
-
-        set_tar_yaw = set_tar_poses[set_tar_pose_index].yaw;
-        pub_target_pose = trans_global2car( set_target_pose, cur_pose, set_tar_yaw);
-        
-        //ROS_INFO("pubtarx: (%.2f)", pub_target_pose.pose.pose.position.x);
-        
-        //target_pose.pose.pose.position.x-=0.5;
-    
-    //ROS_INFO("x=%.2f,y=%.2f,z=%.2f",cur_pose.pose.pose.position.x,cur_pose.pose.pose.position.y,cur_pose.pose.pose.position.z);
-    double x_error = set_target_pose.pose.pose.position.x - cur_pose.pose.pose.position.x;
-    double y_error = set_target_pose.pose.pose.position.y - cur_pose.pose.pose.position.y;
-    //ROS_INFO("error_y:%d",cur_pose_is_ok);
-    ROS_INFO("index:%d",set_tar_pose_index); 
-    if(cur_pose_is_ok == 1){
-        if(fabs(x_error)<0.05 && fabs(y_error)<0.05 && yaw_is_ok == 1){
-            yaw_is_ok = 0;
-        ROS_INFO("arrived!");
-        if(set_tar_pose_index < set_tar_poses.size() - 1) {
-            set_tar_pose_index ++;
-        }
-   
-        //currentState = State::COMPLETE;
-        }
-    
-    
-    // ROS_INFO("x=%.2f,y=%.2f,z=%.2f",
-    // target_pose.pose.pose.position.x,target_pose.pose.pose.position.y,target_pose.pose.pose.position.z);
-    //target_pose.pose.pose.orientation = cur_pose.pose.pose.orientation;
-    } 
+    ROS_INFO("Slam init finished!");//雷达完成初始化
+    ROS_INFO("Init finished!");
+    //TODO检查各个模块，还缺少检查地盘和检查机械臂的代码，需要标志位的检查
+    currentState = State::DELIVER_TO_PROCESSING;
 }
 
 void RobotFSM::handleReadQRCode(Event event) {
@@ -120,11 +120,13 @@ void RobotFSM::handleFetchFirstBatch(Event event) {
     }
 }
 
-void RobotFSM::handleDeliverToProcessing(Event event) {
-    if (event == Event::BATCH_DELIVERED) {
-        currentState = State::STORE_FIRST_BATCH;
-        ROS_INFO("Storing first batch in temporary storage.");
-    }
+void RobotFSM::handleDeliverToProcessing(Event event) { //步骤2，移动到暂存区
+    add_tar_pose(2, 0.2, 0);
+    add_tar_pose(2, 2, 3.1415);//TODO 输入正确的坐标
+    move();
+    reset_tar_pose();
+    ROS_INFO("Moved to processing area.");
+    currentState = State::STORE_FIRST_BATCH;
 }
 
 void RobotFSM::handleStoreFirstBatch(Event event) {
@@ -132,6 +134,7 @@ void RobotFSM::handleStoreFirstBatch(Event event) {
         currentState = State::FETCH_SECOND_BATCH;
         ROS_INFO("Fetching second batch of materials.");
     }
+    currentState = State::COMPLETE;
 }
 
 void RobotFSM::handleFetchSecondBatch(Event event) {
@@ -160,4 +163,5 @@ void RobotFSM::handleComplete(Event event) {
     // target_pose = cur_pose;
     ROS_INFO("Task completed.");
 }
+
 

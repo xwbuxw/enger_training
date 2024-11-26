@@ -1,3 +1,4 @@
+#include "ros/console.h"
 #include <ros/ros.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/LinearMath/Transform.h>
@@ -8,8 +9,8 @@
 ros::Publisher car_pose_puber;
 
 // 偏移量（根据实际情况修改）
-const double x_offset = -0.3; // 雷达到车身中心的 x 偏移
-const double y_offset = -0.2; // 雷达到车身中心的 y 偏移
+const double x_offset = -0.11; // 雷达到车身中心的 x 偏移
+const double y_offset = -0.07; // 雷达到车身中心的 y 偏移
 const double z_offset = 0.0;  // 雷达到车身中心的 z 偏移
 
 // 回调函数：处理雷达坐标系下的 Odometry
@@ -56,6 +57,7 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr& msg) {
     transformed_odom.pose.pose.orientation.z = car_qz;
     transformed_odom.pose.pose.orientation.w = car_qw;
 
+
     // 发布转换后的数据
     car_pose_puber.publish(transformed_odom);
 }
@@ -69,7 +71,7 @@ int main(int argc, char** argv) {
     ros::Subscriber odom_sub = nh.subscribe<nav_msgs::Odometry>("/aft_mapped_to_init", 10, odomCallback);
 
     // 发布转换后的 Odometry 数据
-    car_pose_puber = nh.advertise<nav_msgs::Odometry>("car_pose", 10);
+    car_pose_puber = nh.advertise<nav_msgs::Odometry>("/cur_pose", 10);
 
     ROS_INFO("Laser to Base Transformer Node started.");
     ros::spin();
