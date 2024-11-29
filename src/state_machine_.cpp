@@ -10,7 +10,7 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include "tools.h"
 #include <vector>
-
+#include "robo_arm.h"
 
 nav_msgs::Odometry cur_pose;
 nav_msgs::Odometry pub_target_pose;
@@ -18,6 +18,8 @@ nav_msgs::Odometry set_target_pose;
 int set_tar_pose_index = 0;
 float set_tar_yaw = 0;
 float eg = 0;
+RobotArm robot_arm();
+
 
 void move(){
     set_target_pose.pose.pose.position.x = set_tar_poses[set_tar_pose_index].x;
@@ -131,6 +133,10 @@ void RobotFSM::handleDeliverToProcessing(Event event) { //步骤2，移动到暂
 
 void RobotFSM::handleStoreFirstBatch(Event event) {
     if (event == Event::BATCH_STORED) {
+        
+        robot_arm.choose('r');
+        
+
         currentState = State::FETCH_SECOND_BATCH;
         ROS_INFO("Fetching second batch of materials.");
     }

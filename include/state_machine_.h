@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
 #include <vector>
+#include <robo_arm.h>
 
 extern nav_msgs::Odometry cur_pose;
 extern nav_msgs::Odometry pub_target_pose;
@@ -39,6 +40,7 @@ public:
     RobotFSM() : currentState(State::INIT) {}
 
     void processEvent(Event event);
+
 
     void set_state(State state) {
         currentState = state;
