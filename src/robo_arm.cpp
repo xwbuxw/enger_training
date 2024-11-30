@@ -12,43 +12,52 @@ void RobotArm::choose (char color) {
     int temp_index=0;
     temp_index = add_arm_pose(INIT_POSE_X, INIT_POSE_Y, CAR_HIGHT, CAM_ANGLE, PAW_OPEN);
     if (color == 'r') {
+        ROS_INFO("CHOOSE RED");
         add_arm_pose(RED_X, RED_Y, CAR_HIGHT, CAM_ANGLE, PAW_OPEN);
         add_arm_pose(RED_X, RED_Y, CAR_HIGHT, CAM_ANGLE, PAW_CLOSE);
         add_arm_pose(RED_X, RED_Y, TEKEUP_HEIGHT, CAM_ANGLE, PAW_CLOSE);
     } else if (color == 'g') {
-        add_arm_pose(4, 0, 0, 0, 0);
-        
+        ROS_INFO("CHOOSE GREEN");
+        add_arm_pose(GREEN_X, GREEN_Y, CAR_HIGHT, CAM_ANGLE, PAW_OPEN);
+        add_arm_pose(GREEN_X, GREEN_Y, CAR_HIGHT, CAM_ANGLE, PAW_CLOSE);
+        add_arm_pose(GREEN_X, GREEN_Y, TEKEUP_HEIGHT, CAM_ANGLE, PAW_CLOSE);
     } else if (color == 'b') {
-        add_arm_pose(4, 0, 0, 0, 0);
-        
+        ROS_INFO("CHOOSE BLUE");
+        add_arm_pose(BULE_X, BULE_Y, CAR_HIGHT, CAM_ANGLE, PAW_OPEN);
+        add_arm_pose(BULE_X, BULE_Y, CAR_HIGHT, CAM_ANGLE, PAW_CLOSE);
+        add_arm_pose(BULE_X, BULE_Y, TEKEUP_HEIGHT, CAM_ANGLE, PAW_CLOSE);
     }
     add_arm_pose(CIRCULAR_X, CIRCULAR_Y, TEKEUP_HEIGHT, CAM_ANGLE, PAW_CLOSE);
-    add_arm_pose(CIRCULAR_X, CIRCULAR_Y, CIRCULAR_HEIGHT, CAM_ANGLE, PAW_CLOSE);
-    add_arm_pose(CIRCULAR_X, CIRCULAR_Y, CIRCULAR_HEIGHT, CAM_ANGLE, PAW_OPEN);
+    
     do {
         arm_pose_pub (temp_index);
         if (arm_arrived(arm_control[temp_index])) {
             temp_index ++;
+            ROS_INFO("choose index %d",temp_index);
         }
     }
     while (temp_index < arm_control.size());
+    ROS_INFO("has chooosen");
 }
 
 
 
-void RobotArm::put_down(arm_pose pose){
+void RobotArm::put_down(){
     int temp_index=0;
-    temp_index = add_arm_pose(1, 0, 0, 0, 0);
-    add_arm_pose(1, 0, 0, 0, 0);
-    add_arm_pose(1, 0, 0, 0, 0);
-    add_arm_pose(1, 0, 0, 0, 0);
+    ROS_INFO("begin put down");
+    temp_index = add_arm_pose(CIRCULAR_X, CIRCULAR_Y, CIRCULAR_HEIGHT, CAM_ANGLE, PAW_CLOSE);
+    add_arm_pose(CIRCULAR_X, CIRCULAR_Y, CIRCULAR_HEIGHT, CAM_ANGLE, PAW_OPEN);
+    add_arm_pose(CIRCULAR_X, CIRCULAR_Y, INIT_POSE_Z, CAM_ANGLE, PAW_OPEN);
+    add_arm_pose(INIT_POSE_X, INIT_POSE_Y, INIT_POSE_Z, CAM_ANGLE, PAW_OPEN);
     do {
         arm_pose_pub (temp_index);
         if (arm_arrived(arm_control[temp_index])) {
             temp_index ++;
+            ROS_INFO("put down index %d",temp_index);
         }
     }
     while (temp_index < arm_control.size());
+    ROS_INFO("has put down");
 }
 
 

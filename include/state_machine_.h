@@ -37,7 +37,7 @@ enum class Event {
 
 class RobotFSM {
 public:
-    RobotFSM() : currentState(State::INIT) {}
+    RobotFSM() : currentState(State::INIT), robot_arm_() {}
 
     void processEvent(Event event);
 
@@ -52,6 +52,8 @@ private:
     ros::NodeHandle nh_;
 
     State currentState;
+
+    RobotArm robot_arm_;
 
     void handleInit(Event event);
 

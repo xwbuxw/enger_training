@@ -12,7 +12,7 @@
 #define RED_IN_CAR (struct arm_pose){1, 1, 1, 1, 1}
 #define GREEN_IN_CAR (struct arm_pose){1, 1, 1, 1, 1}
 #define BULE_IN_CAR (struct arm_pose){1, 1, 1, 1, 1}
-#define CIRCULAR_RELATIVE_CAR (struct arm_pose){1, 1, 1, 1, 1}
+#define CIRCULAR_RELATIVE_CAR (struct arm_pose){1, 1, 1, 1, 1}//没有用
 
 #define INIT_POSE_X 0
 #define INIT_POSE_Y 0
@@ -78,7 +78,7 @@ public:
 
 
     void choose (char color);
-    void put_down(arm_pose pose);
+    void put_down();
 
 private:
 

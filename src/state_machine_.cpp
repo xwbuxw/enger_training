@@ -18,38 +18,41 @@ nav_msgs::Odometry set_target_pose;
 int set_tar_pose_index = 0;
 float set_tar_yaw = 0;
 float eg = 0;
-RobotArm robot_arm();
 
 
-void move(){
-    set_target_pose.pose.pose.position.x = set_tar_poses[set_tar_pose_index].x;
-    set_target_pose.pose.pose.position.y = set_tar_poses[set_tar_pose_index].y;
-    ROS_INFO("set_target_pose.pose.pose.position: (%.2f, %.2f)", set_target_pose.pose.pose.position.x, set_target_pose.pose.pose.position.y);
 
-    set_tar_yaw = set_tar_poses[set_tar_pose_index].yaw;
-    pub_target_pose = trans_global2car( set_target_pose, cur_pose, set_tar_yaw);
+void move(int index){
     
-    //ROS_INFO("pubtarx: (%.2f)", pub_target_pose.pose.pose.position.x);
-    
-    //target_pose.pose.pose.position.x-=0.5;
-    
-    //ROS_INFO("x=%.2f,y=%.2f,z=%.2f",cur_pose.pose.pose.position.x,cur_pose.pose.pose.position.y,cur_pose.pose.pose.position.z);
-    double x_error = set_target_pose.pose.pose.position.x - cur_pose.pose.pose.position.x;
-    double y_error = set_target_pose.pose.pose.position.y - cur_pose.pose.pose.position.y;
-    //ROS_INFO("error_y:%d",cur_pose_is_ok);
-    ROS_INFO("index:%d",set_tar_pose_index); 
-    if(cur_pose_is_ok == 1){
-        if(fabs(x_error)<0.05 && fabs(y_error)<0.05 && yaw_is_ok == 1){
-            yaw_is_ok = 0;
-        ROS_INFO("arrived!");
-        if(set_tar_pose_index < set_tar_poses.size() - 1) {
-            set_tar_pose_index ++;
+    while (index < set_tar_poses.size()) {
+        set_target_pose.pose.pose.position.x = set_tar_poses[index].x;
+        set_target_pose.pose.pose.position.y = set_tar_poses[index].y;
+        ROS_INFO("set_target_pose.pose.pose.position: (%.2f, %.2f)", set_target_pose.pose.pose.position.x, set_target_pose.pose.pose.position.y);
+
+        set_tar_yaw = set_tar_poses[index].yaw;
+        pub_target_pose = trans_global2car( set_target_pose, cur_pose, set_tar_yaw);
+        
+        //ROS_INFO("pubtarx: (%.2f)", pub_target_pose.pose.pose.position.x);
+        
+        //target_pose.pose.pose.position.x-=0.5;
+        
+        //ROS_INFO("x=%.2f,y=%.2f,z=%.2f",cur_pose.pose.pose.position.x,cur_pose.pose.pose.position.y,cur_pose.pose.pose.position.z);
+        double x_error = set_target_pose.pose.pose.position.x - cur_pose.pose.pose.position.x;
+        double y_error = set_target_pose.pose.pose.position.y - cur_pose.pose.pose.position.y;
+        //ROS_INFO("error_y:%d",cur_pose_is_ok);
+        ROS_INFO("index:%d",index); 
+        if(cur_pose_is_ok == 1){
+            if(fabs(x_error)<0.05 && fabs(y_error)<0.05 && yaw_is_ok == 1){
+                yaw_is_ok = 0;
+                ROS_INFO("arrived!");
+                if(index < set_tar_poses.size() - 1) {
+                    index ++;
+                }
+            //currentState = State::COMPLETE;
+            }
+        // ROS_INFO("x=%.2f,y=%.2f,z=%.2f",
+        // target_pose.pose.pose.position.x,target_pose.pose.pose.position.y,target_pose.pose.pose.position.z);
+        //target_pose.pose.pose.orientation = cur_pose.pose.pose.orientation;
         }
-        //currentState = State::COMPLETE;
-        }
-    // ROS_INFO("x=%.2f,y=%.2f,z=%.2f",
-    // target_pose.pose.pose.position.x,target_pose.pose.pose.position.y,target_pose.pose.pose.position.z);
-    //target_pose.pose.pose.orientation = cur_pose.pose.pose.orientation;
     }
 }
 
@@ -83,7 +86,6 @@ void RobotFSM::processEvent(Event event) {
         case State::COMPLETE:
             handleComplete(event);
             break;
-            
     }
 }
 
@@ -123,10 +125,10 @@ void RobotFSM::handleFetchFirstBatch(Event event) {
 }
 
 void RobotFSM::handleDeliverToProcessing(Event event) { //步骤2，移动到暂存区
-    add_tar_pose(2, 0.2, 0);
+    int temp_index = 0;
+    temp_index = add_tar_pose(2, 0.2, 0);
     add_tar_pose(2, 2, 3.1415);//TODO 输入正确的坐标
-    move();
-    reset_tar_pose();
+    move(temp_index);
     ROS_INFO("Moved to processing area.");
     currentState = State::STORE_FIRST_BATCH;
 }
@@ -134,7 +136,19 @@ void RobotFSM::handleDeliverToProcessing(Event event) { //步骤2，移动到暂
 void RobotFSM::handleStoreFirstBatch(Event event) {
     if (event == Event::BATCH_STORED) {
         
-        robot_arm.choose('r');
+        robot_arm_.choose('r');
+        robot_arm_.put_down();
+        int temp_index = 0;
+        temp_index = add_tar_pose(2, 2, 3.1415);//红原前面的坐标
+        move(temp_index);
+        robot_arm_.choose('b');
+        robot_arm_.put_down();
+        temp_index = add_tar_pose(2, 2, 3.1415);//兰原前面的坐标
+        move(temp_index);
+        robot_arm_.choose('g');
+        robot_arm_.put_down();
+        temp_index = add_tar_pose(2, 2, 3.1415);//绿原前面的坐标
+        move(temp_index);
         
 
         currentState = State::FETCH_SECOND_BATCH;

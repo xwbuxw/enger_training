@@ -66,13 +66,14 @@ if (!std::isfinite(cur_orientation.x()) || !std::isfinite(cur_orientation.y()) |
     return transformed_odom;
 }
 
-void add_tar_pose(float x, float y, float yaw) {
+int add_tar_pose(float x, float y, float yaw) {
     set_target_poses add_tar_pose_pose;
     add_tar_pose_pose.x = x;
     add_tar_pose_pose.y = y;
     add_tar_pose_pose.yaw = yaw;
     set_tar_poses.push_back(add_tar_pose_pose);
     ROS_INFO("Added waypoint: (%.2f, %.2f, %.2f)", x, y, yaw);
+    return arm_control.size() - 1;
 }
 
 void reset_tar_pose() {
