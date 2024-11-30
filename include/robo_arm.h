@@ -21,12 +21,12 @@
 #define INIT_POSE_CAM 0
 
 
-#define RED_X 0.5 //红色方块在车上的x坐标
-#define RED_Y 0.5
-#define GREEN_X 0.5
-#define GREEN_Y 0.5
-#define BULE_X 0.5
-#define BULE_Y 0.5
+#define RED_X 109.5 //红色方块在车上的x坐标
+#define RED_Y 106
+#define GREEN_X 109.5
+#define GREEN_Y 199
+#define BULE_X -15
+#define BULE_Y 199
 #define TEKEUP_HEIGHT 0.5 //从车上拿起的高度
 #define CAR_HIGHT 0.2 //快在车上的高度
 #define CIRCULAR_HEIGHT 0.5 //圆在地上的高度 
