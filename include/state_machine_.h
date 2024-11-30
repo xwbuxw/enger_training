@@ -55,6 +55,8 @@ private:
 
     RobotArm robot_arm_;
 
+    void handleTest(Event event);
+
     void handleInit(Event event);
 
     void handleReadQRCode(Event event);

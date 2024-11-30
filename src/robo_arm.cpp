@@ -2,32 +2,54 @@
 #include "ros/console.h"
 #include "std_msgs/ColorRGBA.h"
 #include <robo_arm.h>
+#include <unistd.h>
 #include <vector>
 #include <nav_msgs/Odometry.h>
 
 arm_pose current_arm_pose;
 std::vector<arm_pose> arm_control;
 
+void RobotArm::test() {
+    ROS_INFO("arm begin testen");
+    int temp_index=0;
+    temp_index = add_arm_pose(RED_X, RED_Y, CAR_HIGHT, CAM_ANGLE_RED, PAW_OPEN);
+    add_arm_pose(GREEN_X, GREEN_Y, CAR_HIGHT, CAM_ANGLE_GREEN, PAW_OPEN);
+    add_arm_pose(BULE_X, BULE_Y, CAR_HIGHT, CAM_ANGLE_BLUE, PAW_OPEN);
+    do {
+        arm_pose_pub (temp_index);
+        // if (arm_arrived(arm_control[temp_index])) {
+        //     temp_index ++;
+        //     ROS_INFO("choose index %d",temp_index);
+        // }
+        sleep(3);
+        temp_index ++;
+        ROS_INFO("test index %d",temp_index);
+    }
+    while (temp_index < arm_control.size());
+    ROS_INFO("arm has testen");
+}
+
+
 void RobotArm::choose (char color) {
     int temp_index=0;
     temp_index = add_arm_pose(INIT_POSE_X, INIT_POSE_Y, CAR_HIGHT, CAM_ANGLE, PAW_OPEN);
     if (color == 'r') {
         ROS_INFO("CHOOSE RED");
-        add_arm_pose(RED_X, RED_Y, CAR_HIGHT, CAM_ANGLE, PAW_OPEN);
-        add_arm_pose(RED_X, RED_Y, CAR_HIGHT, CAM_ANGLE, PAW_CLOSE);
-        add_arm_pose(RED_X, RED_Y, TEKEUP_HEIGHT, CAM_ANGLE, PAW_CLOSE);
+        add_arm_pose(RED_X, RED_Y, CAR_HIGHT, CAM_ANGLE_RED, PAW_OPEN);
+        add_arm_pose(RED_X, RED_Y, CAR_HIGHT, CAM_ANGLE_RED, PAW_CLOSE);
+        add_arm_pose(RED_X, RED_Y, TEKEUP_HEIGHT, CAM_ANGLE_RED, PAW_CLOSE);
     } else if (color == 'g') {
         ROS_INFO("CHOOSE GREEN");
-        add_arm_pose(GREEN_X, GREEN_Y, CAR_HIGHT, CAM_ANGLE, PAW_OPEN);
-        add_arm_pose(GREEN_X, GREEN_Y, CAR_HIGHT, CAM_ANGLE, PAW_CLOSE);
-        add_arm_pose(GREEN_X, GREEN_Y, TEKEUP_HEIGHT, CAM_ANGLE, PAW_CLOSE);
+        add_arm_pose(GREEN_X, GREEN_Y, CAR_HIGHT, CAM_ANGLE_GREEN, PAW_OPEN);
+        add_arm_pose(GREEN_X, GREEN_Y, CAR_HIGHT, CAM_ANGLE_GREEN, PAW_CLOSE);
+        add_arm_pose(GREEN_X, GREEN_Y, TEKEUP_HEIGHT, CAM_ANGLE_GREEN, PAW_CLOSE);
     } else if (color == 'b') {
         ROS_INFO("CHOOSE BLUE");
-        add_arm_pose(BULE_X, BULE_Y, CAR_HIGHT, CAM_ANGLE, PAW_OPEN);
-        add_arm_pose(BULE_X, BULE_Y, CAR_HIGHT, CAM_ANGLE, PAW_CLOSE);
-        add_arm_pose(BULE_X, BULE_Y, TEKEUP_HEIGHT, CAM_ANGLE, PAW_CLOSE);
+        add_arm_pose(BULE_X, BULE_Y, CAR_HIGHT, CAM_ANGLE_BLUE, PAW_OPEN);
+        add_arm_pose(BULE_X, BULE_Y, CAR_HIGHT, CAM_ANGLE_BLUE, PAW_CLOSE);
+        add_arm_pose(BULE_X, BULE_Y, TEKEUP_HEIGHT, CAM_ANGLE_BLUE, PAW_CLOSE);
     }
-    add_arm_pose(CIRCULAR_X, CIRCULAR_Y, TEKEUP_HEIGHT, CAM_ANGLE, PAW_CLOSE);
+    
     
     do {
         arm_pose_pub (temp_index);
@@ -42,13 +64,41 @@ void RobotArm::choose (char color) {
 
 
 
-void RobotArm::put_down(){
+void RobotArm::put_down(char color){
     int temp_index=0;
     ROS_INFO("begin put down");
-    temp_index = add_arm_pose(CIRCULAR_X, CIRCULAR_Y, CIRCULAR_HEIGHT, CAM_ANGLE, PAW_CLOSE);
-    add_arm_pose(CIRCULAR_X, CIRCULAR_Y, CIRCULAR_HEIGHT, CAM_ANGLE, PAW_OPEN);
-    add_arm_pose(CIRCULAR_X, CIRCULAR_Y, INIT_POSE_Z, CAM_ANGLE, PAW_OPEN);
-    add_arm_pose(INIT_POSE_X, INIT_POSE_Y, INIT_POSE_Z, CAM_ANGLE, PAW_OPEN);
+    if (color == 'r') {
+        ROS_INFO("PUT DOWN RED");
+        temp_index = add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, TEKEUP_HEIGHT, CAM_ANGLE_RED, PAW_CLOSE);
+        add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, TEKEUP_HEIGHT, CIRCULAR_RED_CAM_ANGLE, PAW_CLOSE);
+        add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, CAR_HIGHT, CIRCULAR_RED_CAM_ANGLE, PAW_CLOSE);
+        add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, CAR_HIGHT, CIRCULAR_RED_CAM_ANGLE, PAW_OPEN);
+        add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, CAR_HIGHT, CIRCULAR_RED_CAM_ANGLE, PAW_OPEN);
+        add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, INIT_POSE_Z, CIRCULAR_RED_CAM_ANGLE, PAW_OPEN);
+        add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, INIT_POSE_Z, CAM_ANGLE, PAW_OPEN);
+        add_arm_pose(INIT_POSE_X, INIT_POSE_Y, INIT_POSE_Z, CAM_ANGLE, PAW_OPEN);
+    } else if (color == 'g') {
+        ROS_INFO("PUT DOWN GREEN");
+        temp_index = add_arm_pose(CIRCULAR_GREEN_X, CIRCULAR_GREEN_Y, TEKEUP_HEIGHT, CAM_ANGLE_GREEN, PAW_CLOSE);
+        add_arm_pose(CIRCULAR_GREEN_X, CIRCULAR_GREEN_Y, TEKEUP_HEIGHT, CIRCULAR_GREEN_CAM_ANGLE, PAW_CLOSE);
+        add_arm_pose(CIRCULAR_GREEN_X, CIRCULAR_GREEN_Y, CAR_HIGHT, CIRCULAR_GREEN_CAM_ANGLE, PAW_CLOSE);
+        add_arm_pose(CIRCULAR_GREEN_X, CIRCULAR_GREEN_Y, CAR_HIGHT, CIRCULAR_GREEN_CAM_ANGLE, PAW_OPEN);
+        add_arm_pose(CIRCULAR_GREEN_X, CIRCULAR_GREEN_Y, CAR_HIGHT, CIRCULAR_GREEN_CAM_ANGLE, PAW_OPEN);
+        add_arm_pose(CIRCULAR_GREEN_X, CIRCULAR_GREEN_Y, INIT_POSE_Z, CIRCULAR_GREEN_CAM_ANGLE, PAW_OPEN);
+        add_arm_pose(CIRCULAR_GREEN_X, CIRCULAR_GREEN_Y, INIT_POSE_Z, CAM_ANGLE, PAW_OPEN);
+        add_arm_pose(INIT_POSE_X, INIT_POSE_Y, INIT_POSE_Z, CAM_ANGLE, PAW_OPEN);
+    } else if (color == 'b') {
+        ROS_INFO("PUT DOWN BLUE");
+        temp_index = add_arm_pose(CIRCULAR_BLUE_X, CIRCULAR_BLUE_Y, TEKEUP_HEIGHT, CAM_ANGLE_BLUE, PAW_CLOSE);
+        add_arm_pose(CIRCULAR_BLUE_X, CIRCULAR_BLUE_Y, TEKEUP_HEIGHT, CIRCULAR_BLUE_CAM_ANGLE, PAW_CLOSE);
+        add_arm_pose(CIRCULAR_BLUE_X, CIRCULAR_BLUE_Y, CAR_HIGHT, CIRCULAR_BLUE_CAM_ANGLE, PAW_CLOSE);
+        add_arm_pose(CIRCULAR_BLUE_X, CIRCULAR_BLUE_Y, CAR_HIGHT, CIRCULAR_BLUE_CAM_ANGLE, PAW_OPEN);
+        add_arm_pose(CIRCULAR_BLUE_X, CIRCULAR_BLUE_Y, CAR_HIGHT, CIRCULAR_BLUE_CAM_ANGLE, PAW_OPEN);
+        add_arm_pose(CIRCULAR_BLUE_X, CIRCULAR_BLUE_Y, INIT_POSE_Z, CIRCULAR_BLUE_CAM_ANGLE, PAW_OPEN);
+        add_arm_pose(CIRCULAR_BLUE_X, CIRCULAR_GREEN_Y, INIT_POSE_Z, CAM_ANGLE, PAW_OPEN);
+        add_arm_pose(INIT_POSE_X, INIT_POSE_Y, INIT_POSE_Z, CAM_ANGLE, PAW_OPEN);
+    }
+
     do {
         arm_pose_pub (temp_index);
         if (arm_arrived(arm_control[temp_index])) {

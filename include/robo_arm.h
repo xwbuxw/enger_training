@@ -23,18 +23,37 @@
 
 #define RED_X 109.5 //红色方块在车上的x坐标
 #define RED_Y 106
+#define CAM_ANGLE_RED 2.355 
 #define GREEN_X 109.5
 #define GREEN_Y 199
+#define CAM_ANGLE_GREEN 2.355
 #define BULE_X -15
 #define BULE_Y 199
-#define TEKEUP_HEIGHT 0.5 //从车上拿起的高度
+#define CAM_ANGLE_BLUE 3.1415
 #define CAR_HIGHT 0.2 //快在车上的高度
+#define TEKEUP_HEIGHT 0.5 //从车上拿起的高度
+
+#define CIRCULAR_RED_X 0.5 //圆相对与车的x坐标
+#define CIRCULAR_RED_Y 0.5
+#define CIRCULAR_RED_CAM_ANGLE 2.355
+#define CIRCULAR_GREEN_X 0.5
+#define CIRCULAR_GREEN_Y 0.5
+#define CIRCULAR_GREEN_CAM_ANGLE 2.355
+#define CIRCULAR_BLUE_X 0.5
+#define CIRCULAR_BLUE_Y 0.5
+#define CIRCULAR_BLUE_CAM_ANGLE 2.355
 #define CIRCULAR_HEIGHT 0.5 //圆在地上的高度 
-#define CIRCULAR_X 0.5 //圆相对与车的x坐标
-#define CIRCULAR_Y 0.5
+
+
+
+
 #define PAW_OPEN 0.5  //家爪打开的角度
 #define PAW_CLOSE 0.5
-#define CAM_ANGLE 0.5 //nouseful
+
+
+
+#define CAM_ANGLE 0.1    //nouseful
+
 
 struct arm_pose{
         double x;
@@ -78,7 +97,8 @@ public:
 
 
     void choose (char color);
-    void put_down();
+    void put_down(char color);
+    void test();
 
 private:
 

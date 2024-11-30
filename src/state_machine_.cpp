@@ -86,13 +86,20 @@ void RobotFSM::processEvent(Event event) {
         case State::COMPLETE:
             handleComplete(event);
             break;
-    }
+        case State::TEST:
+            handleTest(event);
+            break;
+        }
 }
 
 // void RobotFSM::processEvent(Event event) {
 //     handleInit(event);
 //     ROS_INFO("process_init");
 // }
+
+void RobotFSM::handleTest(Event event){
+    robot_arm_.test();
+}
 
 void RobotFSM::handleInit(Event event){
     ROS_INFO("MISSION_START!");
