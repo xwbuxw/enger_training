@@ -7,6 +7,9 @@
 #include <nav_msgs/Odometry.h>
 
 arm_pose current_arm_pose;
+arm_pose red_circle;
+arm_pose blue_circle;
+arm_pose green_circle;
 std::vector<arm_pose> arm_control;
 
 void RobotArm::test() {
@@ -62,7 +65,48 @@ void RobotArm::choose (char color) {
     ROS_INFO("has chooosen");
 }
 
+void RobotArm::vision(char color) {
+    if (fabs(vision_data_.x) > LIMIT_VISION_X) {
+        movelittle(vision_data_.x > 0 ? '<' : '>');
+    }
+    // 如果 x 在可接受范围内，处理 y 方向
+    else if (fabs(vision_data_.y) > LIMIT_VISION_Y) {
+        movelittle(vision_data_.y > 0 ? '^' : 'v');
+    }
 
+    else if (fabs(vision_data_.x) <= LIMIT_VISION_X && fabs(vision_data_.y) <= LIMIT_VISION_Y) {
+        switch (color) {
+            case 'r':
+                red_circle = current_arm_pose;
+                break;
+            case 'g':
+                green_circle = current_arm_pose;
+                break;
+            case 'b':
+                blue_circle = current_arm_pose;
+                break;
+        }
+    }
+}
+
+void RobotArm::movelittle(char direction) {
+    arm_pose last_pose = arm_control.back();
+
+    if (direction == '<') {
+        last_pose.x += MOVE_LITTLE_DISTANCE;
+    } else if (direction == '>') {
+        last_pose.x -= MOVE_LITTLE_DISTANCE;
+    } else if (direction == '^') {
+        last_pose.y += MOVE_LITTLE_DISTANCE;
+    } else if (direction == 'v') {
+        last_pose.y -= MOVE_LITTLE_DISTANCE;
+    } 
+
+    int temp_index = add_arm_pose_from_define(last_pose);
+    while (!arm_arrived(last_pose)) {
+        arm_pose_pub(temp_index);
+    }
+}
 
 void RobotArm::put_down(char color){
     int temp_index=0;
@@ -146,12 +190,11 @@ void RobotArm::vision_cb(const std_msgs::ColorRGBA::ConstPtr& msg)
 {
 std_msgs::ColorRGBA temp_vision_msg;
 temp_vision_msg = *msg;
-temp_vision_msg.r = vision_data_.x;
-temp_vision_msg.g = vision_data_.y;
-temp_vision_msg.b = vision_data_.color;
+vision_data_.x = temp_vision_msg.r;
+vision_data_.y = temp_vision_msg.g;
+vision_data_.color = temp_vision_msg.b;
 //ROS_INFO("x=%.2f,y=%.2f,z=%.2f",cur_pose.pose.pose.position.x,cur_pose.pose.pose.position.y,cur_pose.pose.pose.position.z);
 }
-
 void RobotArm::arm_pose_pub(int index){
         nav_msgs::Odometry target_arm_pose_pub;
         target_arm_pose_pub.pose.pose.position.x = arm_control[index].cam_angle; // ע������Ӧ���� num.x ������ arm_control[num].cam_angle
@@ -163,11 +206,6 @@ void RobotArm::arm_pose_pub(int index){
         ROS_INFO("arm_moving_to_target");
         ros::Duration(0.1).sleep();
 }
-
-
-
-
-
 bool RobotArm::arm_arrived(arm_pose target_arm_pose){
     if(fabs(current_arm_pose.x - target_arm_pose.x)<0.3 &&
         fabs(current_arm_pose.y - target_arm_pose.y)<0.3 &&
