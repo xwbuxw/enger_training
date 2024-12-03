@@ -54,6 +54,11 @@
 
 #define CAM_ANGLE 0.1    //nouseful
 
+#define LIMIT_VISION_X 0.2 //视觉对准
+#define LIMIT_VISION_Y 0.2 //视觉对准
+
+#define MOVE_LITTLE_DISTANCE 0.5 //对准阶段一次移动的距离
+
 
 struct arm_pose{
         double x;
@@ -70,7 +75,9 @@ struct vision_data{
 
 
 extern std::vector<arm_pose> arm_control;
-
+extern arm_pose red_circle;
+extern arm_pose blue_circle;
+extern arm_pose green_circle;
 
 
 class RobotArm {
@@ -104,6 +111,8 @@ private:
 
     vision_data vision_data_;
     int add_arm_pose(float x, float y, float z, float cam_angle, float paw_angle);
+    void vision(char color);
+    void movelittle(char direction);
     void arm_pose_cb(const nav_msgs::Odometry::ConstPtr& msg);
     void vision_cb(const std_msgs::ColorRGBA::ConstPtr& msg);
     bool arm_arrived(arm_pose target_arm_pose);
