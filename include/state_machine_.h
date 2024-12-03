@@ -22,7 +22,8 @@ enum class State {
     STORE_SECOND_BATCH,
     RETURN_TO_START,
     COMPLETE,
-    TEST
+    TEST,
+    TEST_VISION
 };
 
 enum class Event {
@@ -56,6 +57,8 @@ private:
     RobotArm robot_arm_;
 
     void handleTest(Event event);
+
+    void handleTest_vision(Event event);
 
     void handleInit(Event event);
 

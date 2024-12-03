@@ -89,6 +89,9 @@ void RobotFSM::processEvent(Event event) {
         case State::TEST:
             handleTest(event);
             break;
+        case State::TEST_VISION:
+            handleTest(event);
+            break;
         }
 }
 
@@ -99,6 +102,10 @@ void RobotFSM::processEvent(Event event) {
 
 void RobotFSM::handleTest(Event event){
     robot_arm_.test();
+}
+
+void RobotFSM::handleTest_vision(Event event){
+    
 }
 
 void RobotFSM::handleInit(Event event){
@@ -144,7 +151,7 @@ void RobotFSM::handleStoreFirstBatch(Event event) {
     if (event == Event::BATCH_STORED) {
         
         robot_arm_.choose('r');
-        robot_arm_.put_down('r''r');
+        robot_arm_.put_down('r');
         //int temp_index = 0;
         //temp_index = add_tar_pose(2, 2, 3.1415);//红原前面的坐标
         //move(temp_index);

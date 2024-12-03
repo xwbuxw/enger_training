@@ -32,10 +32,5 @@ int main(int argc, char **argv) {
         ros::spinOnce();
         rate.sleep();
     }
-
-    for(int i=5;i>0;i--){
-        pub_target_pose = cur_pose;
-        tar_pose_pub.publish(pub_target_pose); 
-    }
     return 0;
 }

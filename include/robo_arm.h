@@ -106,12 +106,13 @@ public:
     void choose (char color);
     void put_down(char color);
     void test();
+    int vision_correction(char color);
 
 private:
 
     vision_data vision_data_;
     int add_arm_pose(float x, float y, float z, float cam_angle, float paw_angle);
-    void vision(char color);
+    int vision(char color);
     void movelittle(char direction);
     void arm_pose_cb(const nav_msgs::Odometry::ConstPtr& msg);
     void vision_cb(const std_msgs::ColorRGBA::ConstPtr& msg);

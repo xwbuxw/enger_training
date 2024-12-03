@@ -1,5 +1,6 @@
 #include "geometry_msgs/Pose.h"
 #include "ros/console.h"
+#include "ros/init.h"
 #include "std_msgs/ColorRGBA.h"
 #include <robo_arm.h>
 #include <unistd.h>
@@ -20,13 +21,15 @@ void RobotArm::test() {
      //add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, TEKEUP_HEIGHT, CIRCULAR_RED_CAM_ANGLE, PAW_CLOSE);
      //add_arm_pose(430, 0, CAR_HIGHT, CIRCULAR_BLUE_CAM_ANGLE, PAW_OPEN);
     do {
+
+        //if (arm_arrived(arm_control[temp_index])){
         arm_pose_pub (temp_index);
         temp_index ++;
         ROS_INFO("choose index %d",temp_index);
-        sleep(1);
-        //usleep(200000);
+        //}
+        //ros::Duration(6).sleep();
     }
-    while (temp_index < arm_control.size());
+    while (temp_index < arm_control.size() && ros::ok());
 
     ROS_INFO("arm has testen");
 }
@@ -60,11 +63,41 @@ void RobotArm::choose (char color) {
             ROS_INFO("choose index %d",temp_index);
         }
     }
-    while (temp_index < arm_control.size());
+    while (temp_index < arm_control.size() && ros::ok());
     ROS_INFO("has chooosen");
 }
 
-void RobotArm::vision(char color) {
+int RobotArm::vision_correction(char color){
+    int temp_index=0;
+    temp_index = add_arm_pose(INIT_POSE_X, INIT_POSE_Y, CAR_HIGHT, CAM_ANGLE, PAW_OPEN);
+    switch (color) {
+        case 'r':
+            add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, TEKEUP_HEIGHT, CIRCULAR_RED_CAM_ANGLE, PAW_CLOSE);
+            break;
+        case 'g':
+            add_arm_pose(CIRCULAR_GREEN_X, CIRCULAR_GREEN_Y, TEKEUP_HEIGHT, CIRCULAR_RED_CAM_ANGLE, PAW_CLOSE);
+            break;
+        case 'b':
+            add_arm_pose(CIRCULAR_BLUE_X, CIRCULAR_BLUE_Y, TEKEUP_HEIGHT, CIRCULAR_RED_CAM_ANGLE, PAW_CLOSE);
+            break;
+    }
+    do {
+        arm_pose_pub (temp_index);
+        if (arm_arrived(arm_control[temp_index])) {//todo 下位节点写一个返回位置的callback
+            temp_index ++;
+            ROS_INFO("moved to %c,ready to do correction",color);
+        }
+    }
+    while (temp_index < arm_control.size() && ros::ok());
+    int result = 0;
+    while(!result && ros::ok()){//阻塞式接收,调整机械臂位置
+        result = vision(color);
+    }
+    return result;
+}
+
+int RobotArm::vision(char color) {
+    int result = 0;
     if (fabs(vision_data_.x) > LIMIT_VISION_X) {
         movelittle(vision_data_.x > 0 ? '<' : '>');
     }
@@ -77,15 +110,25 @@ void RobotArm::vision(char color) {
         switch (color) {
             case 'r':
                 red_circle = current_arm_pose;
+                result = 1;
+                ROS_INFO("red_circle successfully founded");
                 break;
             case 'g':
                 green_circle = current_arm_pose;
+                result = 2;
+                ROS_INFO("green_circle successfully founded");
                 break;
             case 'b':
                 blue_circle = current_arm_pose;
+                result = 3;
+                ROS_INFO("blue_circle successfully founded");
                 break;
         }
     }
+
+    return result;
+
+
 }
 
 void RobotArm::movelittle(char direction) {
@@ -102,9 +145,8 @@ void RobotArm::movelittle(char direction) {
     } 
 
     int temp_index = add_arm_pose_from_define(last_pose);
-    while (!arm_arrived(last_pose)) {
-        arm_pose_pub(temp_index);
-    }
+    //while (!arm_arrived(last_pose)) {
+    arm_pose_pub(temp_index);
 }
 
 void RobotArm::put_down(char color){
