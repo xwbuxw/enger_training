@@ -144,18 +144,18 @@ void RobotFSM::handleStoreFirstBatch(Event event) {
     if (event == Event::BATCH_STORED) {
         
         robot_arm_.choose('r');
-        robot_arm_.put_down();
-        int temp_index = 0;
-        temp_index = add_tar_pose(2, 2, 3.1415);//红原前面的坐标
-        move(temp_index);
-        robot_arm_.choose('b');
-        robot_arm_.put_down();
-        temp_index = add_tar_pose(2, 2, 3.1415);//兰原前面的坐标
-        move(temp_index);
-        robot_arm_.choose('g');
-        robot_arm_.put_down();
-        temp_index = add_tar_pose(2, 2, 3.1415);//绿原前面的坐标
-        move(temp_index);
+        robot_arm_.put_down('r');
+        //int temp_index = 0;
+        //temp_index = add_tar_pose(2, 2, 3.1415);//红原前面的坐标
+        //move(temp_index);
+        //robot_arm_.choose('b');
+        //robot_arm_.put_down('g');
+        //temp_index = add_tar_pose(2, 2, 3.1415);//蓝原前面的坐标
+        //move(temp_index);
+        //robot_arm_.choose('g');
+        //robot_arm_.put_down('b');
+        //temp_index = add_tar_pose(2, 2, 3.1415);//绿原前面的坐标
+        //move(temp_index);
         
 
         currentState = State::FETCH_SECOND_BATCH;

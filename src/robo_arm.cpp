@@ -11,21 +11,20 @@ std::vector<arm_pose> arm_control;
 
 void RobotArm::test() {
     ROS_INFO("arm begin testen");
-    int temp_index=0;
-    temp_index = add_arm_pose(RED_X, RED_Y, CAR_HIGHT, CAM_ANGLE_RED, PAW_OPEN);
-    add_arm_pose(GREEN_X, GREEN_Y, CAR_HIGHT, CAM_ANGLE_GREEN, PAW_OPEN);
-    add_arm_pose(BULE_X, BULE_Y, CAR_HIGHT, CAM_ANGLE_BLUE, PAW_OPEN);
+    int temp_index = add_arm_pose(BULE_X+25, BULE_Y, CAR_HIGHT, CIRCULAR_BLUE_CAM_ANGLE, PAW_OPEN);
+    //add_arm_pose(BULE_X, BULE_Y, CAR_HIGHT, CIRCULAR_BLUE_CAM_ANGLE, PAW_OPEN);
+    add_arm_pose(BULE_X-25, BULE_Y, CAR_HIGHT, CIRCULAR_BLUE_CAM_ANGLE, PAW_OPEN);
+     //add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, TEKEUP_HEIGHT, CIRCULAR_RED_CAM_ANGLE, PAW_CLOSE);
+     //add_arm_pose(430, 0, CAR_HIGHT, CIRCULAR_BLUE_CAM_ANGLE, PAW_OPEN);
     do {
         arm_pose_pub (temp_index);
-        // if (arm_arrived(arm_control[temp_index])) {
-        //     temp_index ++;
-        //     ROS_INFO("choose index %d",temp_index);
-        // }
-        sleep(3);
         temp_index ++;
-        ROS_INFO("test index %d",temp_index);
+        ROS_INFO("choose index %d",temp_index);
+        sleep(1);
+        //usleep(200000);
     }
     while (temp_index < arm_control.size());
+
     ROS_INFO("arm has testen");
 }
 
