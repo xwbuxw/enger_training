@@ -157,6 +157,7 @@ void RobotFSM::handleFetchFirstBatch(Event event) {
     }
 }
 
+
 void RobotFSM::handleDeliverToProcessing(Event event) { //步骤2，移动到粗加工区
 
     if (add_flag != 1) {
