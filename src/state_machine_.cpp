@@ -1,4 +1,5 @@
 #include "ros/console.h"
+#include "ros/init.h"
 #include "ros/publisher.h"
 #include <cmath>
 #include <iostream>
@@ -23,12 +24,13 @@ float eg = 0;
 
 void move(int index){
     
-    while (index < set_tar_poses.size()) {
+    while (index < set_tar_poses.size() && ros::ok()) {
         set_target_pose.pose.pose.position.x = set_tar_poses[index].x;
         set_target_pose.pose.pose.position.y = set_tar_poses[index].y;
         ROS_INFO("set_target_pose.pose.pose.position: (%.2f, %.2f)", set_target_pose.pose.pose.position.x, set_target_pose.pose.pose.position.y);
 
         set_tar_yaw = set_tar_poses[index].yaw;
+        ROS_INFO("currx is %.5f",cur_pose.pose.pose.position.x);
         pub_target_pose = trans_global2car( set_target_pose, cur_pose, set_tar_yaw);
         
         //ROS_INFO("pubtarx: (%.2f)", pub_target_pose.pose.pose.position.x);
@@ -53,6 +55,7 @@ void move(int index){
         // target_pose.pose.pose.position.x,target_pose.pose.pose.position.y,target_pose.pose.pose.position.z);
         //target_pose.pose.pose.orientation = cur_pose.pose.pose.orientation;
         }
+        ros::spinOnce();
     }
 }
 
@@ -110,14 +113,15 @@ void RobotFSM::handleTest_vision(Event event){
 
 void RobotFSM::handleInit(Event event){
     ROS_INFO("MISSION_START!");
-    while(cur_pose.pose.pose.position.x == 0);
-    {
+    //while(cur_pose.pose.pose.position.x == 0);
+    //{
         ROS_INFO("Waiting for SLAM to initialize...");
-    }
+    //}
     ROS_INFO("Slam init finished!");//雷达完成初始化
     ROS_INFO("Init finished!");
     //TODO检查各个模块，还缺少检查地盘和检查机械臂的代码，需要标志位的检查
     currentState = State::DELIVER_TO_PROCESSING;
+    //currentState = State::STORE_FIRST_BATCH;
 }
 
 void RobotFSM::handleReadQRCode(Event event) {
@@ -138,20 +142,23 @@ void RobotFSM::handleFetchFirstBatch(Event event) {
     }
 }
 
-void RobotFSM::handleDeliverToProcessing(Event event) { //步骤2，移动到暂存区
-    int temp_index = 0;
-    temp_index = add_tar_pose(2, 0.2, 0);
-    add_tar_pose(2, 2, 3.1415);//TODO 输入正确的坐标
+void RobotFSM::handleDeliverToProcessing(Event event) { //步骤2，移动到粗加工区
+    int temp_index = add_tar_pose(0.2, 0, 0);
+    //add_tar_pose(0.2,0.2, 3.1415);//TODO 输入正确的坐标
     move(temp_index);
-    ROS_INFO("Moved to processing area.");
-    currentState = State::STORE_FIRST_BATCH;
+    //ROS_INFO("Moved to processing area.");
+    //currentState = State::STORE_FIRST_BATCH;
 }
 
 void RobotFSM::handleStoreFirstBatch(Event event) {
-    if (event == Event::BATCH_STORED) {
+    // if (event == Event::BATCH_STORED) {
         
         robot_arm_.choose('r');
         robot_arm_.put_down('r');
+        robot_arm_.choose('g');
+        robot_arm_.put_down('g');
+        robot_arm_.choose('b');
+        robot_arm_.put_down('b');
         //int temp_index = 0;
         //temp_index = add_tar_pose(2, 2, 3.1415);//红原前面的坐标
         //move(temp_index);
@@ -167,8 +174,8 @@ void RobotFSM::handleStoreFirstBatch(Event event) {
 
         currentState = State::FETCH_SECOND_BATCH;
         ROS_INFO("Fetching second batch of materials.");
-    }
-    currentState = State::COMPLETE;
+    // }
+    // currentState = State::COMPLETE;
 }
 
 void RobotFSM::handleFetchSecondBatch(Event event) {

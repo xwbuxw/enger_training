@@ -18,7 +18,7 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr& msg) {
     // 创建 TF 变换
     tf2::Transform laser_to_base;
     laser_to_base.setOrigin(tf2::Vector3(x_offset, y_offset, z_offset));
-    laser_to_base.setRotation(tf2::Quaternion(0, 0, 0, 1)); // 无额外旋转
+    laser_to_base.setRotation(tf2::Quaternion(0, 0, -0.707, 0.707)); // 额外旋转
 
     // 从输入的 Odometry 提取位置和方向
     tf2::Transform laser_pose;

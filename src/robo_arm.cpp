@@ -17,13 +17,13 @@ std::vector<arm_pose> arm_control;
 void RobotArm::test() {
     ROS_INFO("arm begin testen");
     int temp_index = 
-    add_arm_pose(RED_X, RED_Y, -1, CIRCULAR_BLUE_CAM_ANGLE, PAW_OPEN);
-    add_arm_pose(RED_X, RED_Y, -60, CIRCULAR_BLUE_CAM_ANGLE, PAW_OPEN);
-    add_arm_pose(RED_X, RED_Y, -1, CIRCULAR_BLUE_CAM_ANGLE, PAW_OPEN);
+    add_arm_pose(RED_X, RED_Y, -1, CIRCULAR_BLUE_CAM_ANGLE, 0);
+    add_arm_pose(RED_X, RED_Y, -60, CIRCULAR_BLUE_CAM_ANGLE, 1);
+    add_arm_pose(RED_X, RED_Y, -1, CIRCULAR_BLUE_CAM_ANGLE, 0);
 
-    add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, -1, CIRCULAR_RED_CAM_ANGLE, PAW_CLOSE);
-    add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, -150, CIRCULAR_RED_CAM_ANGLE, PAW_CLOSE);
-    add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, -1, CIRCULAR_RED_CAM_ANGLE, PAW_CLOSE);
+    add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, -1, CIRCULAR_RED_CAM_ANGLE, 1);
+    add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, -150, CIRCULAR_RED_CAM_ANGLE, 0);
+    add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, -1, CIRCULAR_RED_CAM_ANGLE, 1);
 
     do {
         //if (arm_arrived(arm_control[temp_index])){
