@@ -171,7 +171,7 @@ void RobotFSM::handleDeliverToProcessing(Event event) { //步骤2，移动到粗
         move_index ++;
     } 
     if(move_index = arm_control.size()) {
-        add_flag = 1;
+        add_flag = 0;
         currentState = State::STORE_FIRST_BATCH;
     }
     
