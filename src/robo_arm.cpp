@@ -15,19 +15,22 @@ std::vector<arm_pose> arm_control;
 
 void RobotArm::test() {
     ROS_INFO("arm begin testen");
-    int temp_index = add_arm_pose(BULE_X+25, BULE_Y, CAR_HIGHT, CIRCULAR_BLUE_CAM_ANGLE, PAW_OPEN);
-    //add_arm_pose(BULE_X, BULE_Y, CAR_HIGHT, CIRCULAR_BLUE_CAM_ANGLE, PAW_OPEN);
-    add_arm_pose(BULE_X-25, BULE_Y, CAR_HIGHT, CIRCULAR_BLUE_CAM_ANGLE, PAW_OPEN);
-     //add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, TEKEUP_HEIGHT, CIRCULAR_RED_CAM_ANGLE, PAW_CLOSE);
-     //add_arm_pose(430, 0, CAR_HIGHT, CIRCULAR_BLUE_CAM_ANGLE, PAW_OPEN);
-    do {
+    int temp_index = 
+    add_arm_pose(RED_X, RED_Y, -1, CIRCULAR_BLUE_CAM_ANGLE, PAW_OPEN);
+    add_arm_pose(RED_X, RED_Y, -60, CIRCULAR_BLUE_CAM_ANGLE, PAW_OPEN);
+    add_arm_pose(RED_X, RED_Y, -1, CIRCULAR_BLUE_CAM_ANGLE, PAW_OPEN);
 
+    add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, -1, CIRCULAR_RED_CAM_ANGLE, PAW_CLOSE);
+    add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, -150, CIRCULAR_RED_CAM_ANGLE, PAW_CLOSE);
+    add_arm_pose(CIRCULAR_RED_X, CIRCULAR_RED_Y, -1, CIRCULAR_RED_CAM_ANGLE, PAW_CLOSE);
+
+    do {
         //if (arm_arrived(arm_control[temp_index])){
         arm_pose_pub (temp_index);
         temp_index ++;
         ROS_INFO("choose index %d",temp_index);
         //}
-        //ros::Duration(6).sleep();
+        ros::Duration(9).sleep();
     }
     while (temp_index < arm_control.size() && ros::ok());
 
@@ -67,7 +70,7 @@ void RobotArm::choose (char color) {
     ROS_INFO("has chooosen");
 }
 
-int RobotArm::vision_correction(char color){
+int RobotArm::vision_correction(char color){//初版视觉矫正代码。使用阻塞式编写
     int temp_index=0;
     temp_index = add_arm_pose(INIT_POSE_X, INIT_POSE_Y, CAR_HIGHT, CAM_ANGLE, PAW_OPEN);
     switch (color) {
@@ -125,10 +128,7 @@ int RobotArm::vision(char color) {
                 break;
         }
     }
-
     return result;
-
-
 }
 
 void RobotArm::movelittle(char direction) {
@@ -191,7 +191,7 @@ void RobotArm::put_down(char color){
             ROS_INFO("put down index %d",temp_index);
         }
     }
-    while (temp_index < arm_control.size());
+    while (temp_index < arm_control.size() && ros::ok());
     ROS_INFO("has put down");
 }
 

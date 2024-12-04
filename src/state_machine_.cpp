@@ -90,7 +90,7 @@ void RobotFSM::processEvent(Event event) {
             handleTest(event);
             break;
         case State::TEST_VISION:
-            handleTest(event);
+            handleTest_vision(event);
             break;
         }
 }
