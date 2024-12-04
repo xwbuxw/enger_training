@@ -47,8 +47,8 @@
 
 
 
-#define PAW_OPEN 0.5  //家爪打开的角度
-#define PAW_CLOSE 0.5
+#define PAW_OPEN 1  //家爪打开的角度
+#define PAW_CLOSE 0
 
 
 

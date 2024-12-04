@@ -209,7 +209,7 @@ int RobotArm::add_arm_pose(float x, float y, float z, float cam_angle, float paw
     //this temp this temp this temp this temp this temp this temp this temp this temp
     double last_z = arm_control.back().z;
     if (fabs(last_z - z) != 0) {
-        temp_pose.temp_time = 0.1 * fabs(last_z - z);
+        temp_pose.temp_time = 0.09 * fabs(last_z - z);
 
     } else {
         temp_pose.temp_time = 3;
