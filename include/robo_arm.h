@@ -66,6 +66,7 @@ struct arm_pose{
         double z;
         double cam_angle;
         double paw_angle;
+        double temp_time; //must be delete
     };
 struct vision_data{
     double x;

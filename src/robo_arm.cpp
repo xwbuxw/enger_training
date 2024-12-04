@@ -2,6 +2,7 @@
 #include "ros/console.h"
 #include "ros/init.h"
 #include "std_msgs/ColorRGBA.h"
+#include <cmath>
 #include <robo_arm.h>
 #include <unistd.h>
 #include <vector>
@@ -30,7 +31,7 @@ void RobotArm::test() {
         temp_index ++;
         ROS_INFO("choose index %d",temp_index);
         //}
-        ros::Duration(9).sleep();
+        ros::Duration(arm_control[temp_index-1].temp_time).sleep();
     }
     while (temp_index < arm_control.size() && ros::ok());
 
@@ -204,6 +205,18 @@ int RobotArm::add_arm_pose(float x, float y, float z, float cam_angle, float paw
     temp_pose.z = z;
     temp_pose.cam_angle = cam_angle;
     temp_pose.paw_angle = paw_angle;
+
+    //this temp this temp this temp this temp this temp this temp this temp this temp
+    double last_z = arm_control.back().z;
+    if (fabs(last_z - z) != 0) {
+        temp_pose.temp_time = 0.1 * fabs(last_z - z);
+
+    } else {
+        temp_pose.temp_time = 3;
+    }
+    ROS_INFO("temp_time %f",temp_pose.temp_time);
+    //this temp this temp this temp this temp this temp this temp this temp this temp
+
     arm_control.push_back(temp_pose);
     return arm_control.size() - 1; // 返回新加入元素的索引值
 }
