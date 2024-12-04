@@ -19,12 +19,13 @@ nav_msgs::Odometry set_target_pose;
 int set_tar_pose_index = 0;
 float set_tar_yaw = 0;
 float eg = 0;
-
+bool add_flag = 0;
+int move_index;
 
 
 void move(int index){
     
-    while (index < set_tar_poses.size() && ros::ok()) {
+    
         set_target_pose.pose.pose.position.x = set_tar_poses[index].x;
         set_target_pose.pose.pose.position.y = set_tar_poses[index].y;
         ROS_INFO("set_target_pose.pose.pose.position: (%.2f, %.2f)", set_target_pose.pose.pose.position.x, set_target_pose.pose.pose.position.y);
@@ -38,26 +39,40 @@ void move(int index){
         //target_pose.pose.pose.position.x-=0.5;
         
         //ROS_INFO("x=%.2f,y=%.2f,z=%.2f",cur_pose.pose.pose.position.x,cur_pose.pose.pose.position.y,cur_pose.pose.pose.position.z);
-        double x_error = set_target_pose.pose.pose.position.x - cur_pose.pose.pose.position.x;
-        double y_error = set_target_pose.pose.pose.position.y - cur_pose.pose.pose.position.y;
-        //ROS_INFO("error_y:%d",cur_pose_is_ok);
-        ROS_INFO("index:%d",index); 
-        if(cur_pose_is_ok == 1){
-            if(fabs(x_error)<0.05 && fabs(y_error)<0.05 && yaw_is_ok == 1){
-                yaw_is_ok = 0;
-                ROS_INFO("arrived!");
-                if(index < set_tar_poses.size() - 1) {
-                    index ++;
-                }
-            //currentState = State::COMPLETE;
-            }
+        // double x_error = set_target_pose.pose.pose.position.x - cur_pose.pose.pose.position.x;
+        // double y_error = set_target_pose.pose.pose.position.y - cur_pose.pose.pose.position.y;
+        // //ROS_INFO("error_y:%d",cur_pose_is_ok);
+        // ROS_INFO("index:%d",index); 
+        // if(cur_pose_is_ok == 1){
+        //     if(fabs(x_error)<0.05 && fabs(y_error)<0.05 && yaw_is_ok == 1){
+        //         yaw_is_ok = 0;
+        //         ROS_INFO("arrived!");
+        //         if(index < set_tar_poses.size() - 1) {
+        //             index ++;
+        //         }
+        //     //currentState = State::COMPLETE;
+        //     }
         // ROS_INFO("x=%.2f,y=%.2f,z=%.2f",
         // target_pose.pose.pose.position.x,target_pose.pose.pose.position.y,target_pose.pose.pose.position.z);
         //target_pose.pose.pose.orientation = cur_pose.pose.pose.orientation;
-        }
-        ros::spinOnce();
-    }
+        // }
+   
 }
+
+bool car_arrive (int index) {
+    nav_msgs::Odometry temp_pose;
+    temp_pose.pose.pose.position.x = set_tar_poses[index].x;
+    temp_pose.pose.pose.position.y = set_tar_poses[index].y;
+    double x_error = temp_pose.pose.pose.position.x - cur_pose.pose.pose.position.x;
+    double y_error = temp_pose.pose.pose.position.y - cur_pose.pose.pose.position.y;
+    if(fabs(x_error)<0.05 && fabs(y_error)<0.05 && yaw_is_ok == 1){
+                yaw_is_ok = 0;
+                ROS_INFO("arrived!");
+                return 1;
+            //currentState = State::COMPLETE;
+    } else return 0;
+}
+
 
 void RobotFSM::processEvent(Event event) {
     nav_msgs::Odometry return_value;
@@ -143,9 +158,23 @@ void RobotFSM::handleFetchFirstBatch(Event event) {
 }
 
 void RobotFSM::handleDeliverToProcessing(Event event) { //步骤2，移动到粗加工区
-    int temp_index = add_tar_pose(0.2, 0, 0);
+
+    if (add_flag != 1) {
+    move_index = add_tar_pose(0.2, 0, 0);
+    add_tar_pose(0.2, 0.2, 0);
+    add_tar_pose(0.2, 0.2, 0.2);
+    add_flag = 1;
+    }
     //add_tar_pose(0.2,0.2, 3.1415);//TODO 输入正确的坐标
-    move(temp_index);
+    move(move_index);
+    if (car_arrive(move_index)) {
+        move_index ++;
+    } 
+    if(move_index = arm_control.size()) {
+        currentState = State::STORE_FIRST_BATCH;
+    }
+    
+    
     //ROS_INFO("Moved to processing area.");
     //currentState = State::STORE_FIRST_BATCH;
 }
